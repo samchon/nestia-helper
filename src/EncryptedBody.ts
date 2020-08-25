@@ -1,5 +1,5 @@
-import express from "express";
-import nest from "@nestjs/common";
+import * as express from "express";
+import * as nest from "@nestjs/common";
 import raw from "raw-body";
 
 import { AesPkcs5 } from "encrypted-fetcher";
