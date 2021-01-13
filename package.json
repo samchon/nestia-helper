@@ -1,11 +1,12 @@
 {
   "name": "encrypted-nestjs",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "NestJS with AES Encryption",
   "main": "lib/index.js",
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "dev": "npm run build -- --watch"
+    "dev": "npm run build -- --watch",
+    "test": "node lib/test"
   },
   "repository": {
     "type": "git",
@@ -33,7 +34,7 @@
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
     "@types/express": "x.x.x",
-    "encrypted-fetcher": "x.x.x",
+    "encrypted-fetcher": "^0.1.0",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x"

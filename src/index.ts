@@ -1,8 +1,7 @@
-export * from "./Configuration";
+export * from "./IPassword";
+export * from "./IController";
 
 export * from "./EncryptedBody";
 export * from "./EncryptedRoute";
+export * from "./ControllerModule";
 export * from "./TypedParam";
-
-export * from "./IProvider";
-export * from "./ProviderModule";

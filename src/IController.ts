@@ -1,8 +1,8 @@
 import { Request } from "express";
 
-export type IProvider<Controller extends object> = OmitNever<IProvider.Driver<Controller>>;
+export type IController<Controller extends object> = OmitNever<IController.Driver<Controller>>;
 
-export namespace IProvider
+export namespace IController
 {
     export type Driver<Controller extends object> = 
     {

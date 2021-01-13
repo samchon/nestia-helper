@@ -3,11 +3,18 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { AesPkcs5 } from "encrypted-fetcher";
-import { Configuration } from "./Configuration";
+import { IPassword } from "./IPassword";
 
-export function EncryptedRoute(path: string)
+export function EncryptedRoute(path: string, config: IPassword): ClassDecorator;
+export function EncryptedRoute(path: string, closure: IPassword.Closure): ClassDecorator;
+
+export function EncryptedRoute(path: string, config: IPassword | IPassword.Closure): ClassDecorator
 {
-    return nest.Controller(path);
+    return function (target: any)
+    {
+        Reflect.defineMetadata("encryption:config", config, target);
+        nest.Controller(path)(target);
+    };
 }
 
 export namespace EncryptedRoute
@@ -54,15 +61,17 @@ export namespace EncryptedRoute
 
     class Interceptor implements nest.NestInterceptor
     {
-        public intercept({}: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
+        public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
         {
+            const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:config", ctx.getClass())
             return next.handle().pipe(
                 map(value => 
                 {
-                    let content: string = JSON.stringify(value);
-                    content = AesPkcs5.encode(content, Configuration.KEY, Configuration.IV);
-
-                    return content;
+                    const content: string = JSON.stringify(value);
+                    const config: IPassword = (param instanceof Function)
+                        ? param(content, true)
+                        : param;
+                    return AesPkcs5.encode(content, config.key, config.iv);
                 }),
                 catchError(err =>
                 {

@@ -1,8 +1,12 @@
 .git/
+.github/
 node_modules/
 src/
 
+lib/test/
+
 *.*ignore
 *.js.map
+
 package-lock.json
 tsconfig.json

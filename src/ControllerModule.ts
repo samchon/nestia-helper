@@ -27,12 +27,12 @@ async function iterate(providers: object[], path: string): Promise<void>
 }
 
 /**
- * Automatic provider module importer.
+ * Automatic controller module importer.
  * 
- * @param path Target path containing provider classes.
+ * @param path Target path containing controller classes.
  * @author Jeongho Nam - https://github.com/samchon
  */
-export async function ProviderModule(path: string): Promise<object>
+export async function ControllerModule(path: string): Promise<object>
 {
     let providers: any[] = [];
     await iterate(providers, path);
