@@ -1,17 +1,19 @@
 import { NestFactory } from "@nestjs/core";
 import { AesPkcs5, EncryptedFetcher } from "encrypted-fetcher";
-import { Module } from "@nestjs/common";
 import { EncryptedBody } from "../EncryptedBody";
 import { EncryptedRoute } from "../EncryptedRoute";
 import { IPassword } from "../IPassword";
 import { TypedParam } from "../TypedParam";
+import { EncryptedModule } from "../EncryptedModule";
+import { Controller } from "@nestjs/common";
+import { assertType } from "typescript-is";
 
 const CONFIG: IPassword = {
     key: AesPkcs5.random(16),
     iv: AesPkcs5.random(16)
 }
 
-@EncryptedRoute("", CONFIG)
+@Controller()
 class TestController
 {
     @EncryptedRoute.Get("index.html")
@@ -35,9 +37,16 @@ class TestController
             input: input
         };
     }
+
+    @EncryptedRoute.Put("")
+    public async test(@EncryptedBody() input: { id: number, name: string }): Promise<{ content: string }>
+    {
+        assertType<typeof input>(input);
+        return { content: "YAHO" };
+    }
 }
 
-@Module({ controllers: [ TestController ] })
+@EncryptedModule({ controllers: [ TestController ] }, CONFIG)
 class TestModule
 {
 }
@@ -58,6 +67,11 @@ class TestFetcher extends EncryptedFetcher
     {
         return this.fetch("POST", `/${id}`, input);
     }
+
+    public test(input: { id: number, name: string }): Promise<{ content: string }>
+    {
+        return this.fetch("PUT", "/", input);
+    }
 }
 
 async function main(): Promise<void>
@@ -75,6 +89,13 @@ async function main(): Promise<void>
     const something = await fetcher.something(3, { text: "yaho" });
     if (something.id !== 3 || something.input.text !== "yaho")
         throw new Error("Bug on POST /something");
+
+    try
+    {
+        await fetcher.test({ id: 3, name: 4 } as any);
+        throw new Error("Bug on PUT /test: type checker does not work.");
+    }
+    catch {}
 
     // SUCCESS WITH CLOSING
     await app.close();

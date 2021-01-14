@@ -1,14 +1,11 @@
 import * as nest from "@nestjs/common";
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-
-import { AesPkcs5 } from "encrypted-fetcher";
-import { IPassword } from "./IPassword";
 import { route_caught_error } from "./internal/route_caught_exception";
 
-export namespace EncryptedRoute
+export namespace TypedRoute
 {
-    export function Get(path?: string): MethodDecorator
+    export function Get(path?: string)
     {
         return nest.applyDecorators(
             nest.Get(path),
@@ -16,7 +13,7 @@ export namespace EncryptedRoute
         );
     }
 
-    export function Post(path?: string): MethodDecorator
+    export function Post(path?: string)
     {
         return nest.applyDecorators(
             nest.Post(path),
@@ -24,7 +21,7 @@ export namespace EncryptedRoute
         );
     }
 
-    export function Patch(path?: string): MethodDecorator
+    export function Patch(path?: string)
     {
         return nest.applyDecorators(
             nest.Patch(path),
@@ -32,7 +29,7 @@ export namespace EncryptedRoute
         );
     }
 
-    export function Put(path?: string): MethodDecorator
+    export function Put(path?: string)
     {
         return nest.applyDecorators(
             nest.Put(path),
@@ -40,7 +37,7 @@ export namespace EncryptedRoute
         );
     }
 
-    export function Delete(path?: string): MethodDecorator
+    export function Delete(path?: string)
     {
         return nest.applyDecorators(
             nest.Delete(path),
@@ -50,18 +47,11 @@ export namespace EncryptedRoute
 
     class Interceptor implements nest.NestInterceptor
     {
-        public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
+        public intercept({}: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
         {
-            const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:config", ctx.getClass())
-            return next.handle().pipe(
-                map(value => 
-                {
-                    const content: string = JSON.stringify(value);
-                    const password: IPassword = (param instanceof Function)
-                        ? param(content, true)
-                        : param;
-                    return AesPkcs5.encode(content, password.key, password.iv);
-                }),
+            return next.handle().pipe
+            (
+                map(value => value),
                 catchError(err => route_caught_error(err)),
             );
         }
