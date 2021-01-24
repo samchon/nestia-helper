@@ -5,7 +5,7 @@ export function TypedParam(name: string, type: "boolean"|"number"|"string" = "st
 {
     return nest.createParamDecorator
     (
-        ({}: any, ctx: nest.ExecutionContext) =>
+        function TypedParam({}: any, ctx: nest.ExecutionContext)
         {
             let request: express.Request = ctx.switchToHttp().getRequest();
             let ret: string = request.params[name];

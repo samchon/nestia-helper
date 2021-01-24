@@ -8,7 +8,7 @@ import { HttpException } from "@nestjs/common";
 
 export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorator
 (
-    async ({}: any, ctx: nest.ExecutionContext) =>
+    async function EncryptedBody({}: any, ctx: nest.ExecutionContext)
     {
         const request: express.Request = ctx.switchToHttp().getRequest();
         if (request.readable === false)
