@@ -52,7 +52,7 @@ export namespace EncryptedRoute
     {
         public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
         {
-            const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:config", ctx.getClass())
+            const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:password", ctx.getClass())
             return next.handle().pipe(
                 map(value => 
                 {

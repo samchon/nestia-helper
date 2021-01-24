@@ -14,7 +14,7 @@ export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorat
         if (request.readable === false)
             throw new HttpException("Request body is not the text/plain.", 500);
 
-        const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:config", ctx.getClass());
+        const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:password", ctx.getClass());
         const content: string = (await raw(request, "utf8")).trim();
         const config: IPassword = (param instanceof Function)
             ? param(content, false)

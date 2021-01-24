@@ -8,7 +8,7 @@ export function EncryptedController(path: string, password: IPassword | IPasswor
 {
     return function (target: any)
     {
-        Reflect.defineMetadata("encryption:config", password, target);
+        Reflect.defineMetadata("encryption:password", password, target);
         Controller(path)(target);
     };
 }

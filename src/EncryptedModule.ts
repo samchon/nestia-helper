@@ -14,7 +14,7 @@ export function EncryptedModule
         nest.Module(metadata)(target);
         if (metadata.controllers !== undefined)
             for (const controller of metadata.controllers)
-                Reflect.defineMetadata("encryption:config", password, controller);
+                Reflect.defineMetadata("encryption:password", password, controller);
     }
 }
 
