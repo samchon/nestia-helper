@@ -34,9 +34,9 @@ export namespace EncryptedModule
         await iterate(controllers, path);
 
         // RETURNS WITH DECORATING
-        const ret: any = {};
-        EncryptedModule(metadata, config)(ret);
-        return ret;
+        @EncryptedModule(metadata, config)
+        class Module {}
+        return Module;
     }
 
     async function iterate(controllers: object[], path: string): Promise<void>
