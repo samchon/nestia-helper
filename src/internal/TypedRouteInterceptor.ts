@@ -2,7 +2,7 @@ import * as nest from "@nestjs/common";
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
-import { route_caught_error } from "./route_caught_exception";
+import { route_error } from "./route_error";
 
 export class TypedRouteInterceptor implements nest.NestInterceptor
 {
@@ -11,7 +11,7 @@ export class TypedRouteInterceptor implements nest.NestInterceptor
         return next.handle().pipe
         (
             map(value => value),
-            catchError(err => route_caught_error(err)),
+            catchError(err => route_error(err)),
         );
     }
 }

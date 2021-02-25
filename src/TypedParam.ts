@@ -7,8 +7,8 @@ export function TypedParam(name: string, type: "boolean"|"number"|"string" = "st
     (
         function TypedParam({}: any, ctx: nest.ExecutionContext)
         {
-            let request: express.Request = ctx.switchToHttp().getRequest();
-            let ret: string = request.params[name];
+            const request: express.Request = ctx.switchToHttp().getRequest();
+            const ret: string = request.params[name];
             
             if (type === "boolean")
                 return ret !== "false";

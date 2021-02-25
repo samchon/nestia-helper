@@ -4,7 +4,7 @@ import { map, catchError } from 'rxjs/operators';
 
 import { AesPkcs5 } from "encrypted-fetcher";
 import { IPassword } from "../IPassword";
-import { route_caught_error } from "./route_caught_exception";
+import { route_error } from "./route_error";
 
 export class EncryptedRouteInterceptor implements nest.NestInterceptor
 {
@@ -20,7 +20,7 @@ export class EncryptedRouteInterceptor implements nest.NestInterceptor
                     : param;
                 return AesPkcs5.encode(content, password.key, password.iv);
             }),
-            catchError(err => route_caught_error(err)),
+            catchError(err => route_error(err)),
         );
     }
 }
