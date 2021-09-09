@@ -27,16 +27,29 @@ export namespace EncryptedModule
         ): Promise<object>
     {
         // LOAD CONTROLLERS
-        const controllers: any[] = [];
         const metadata: nest.ModuleMetadata = {
-            controllers: controllers
+            controllers: await controllers(path, config)
         };
-        await iterate(controllers, path);
 
         // RETURNS WITH DECORATING
         @EncryptedModule(metadata, config)
         class Module {}
         return Module;
+    }
+
+    export async function controllers
+        (
+            path: string, 
+            password: IPassword | IPassword.Closure
+        ): Promise<any[]>
+    {
+        const output: any[] = [];
+        await iterate(output, path);
+
+        for (const elem of output)
+            Reflect.defineMetadata("encryption:password", password, elem);
+
+        return output;
     }
 
     async function iterate(controllers: object[], path: string): Promise<void>
