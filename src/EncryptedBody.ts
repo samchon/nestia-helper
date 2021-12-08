@@ -6,15 +6,19 @@ import { IPassword } from "./IPassword";
 import { AesPkcs5 } from "encrypted-fetcher";
 import { HttpException } from "@nestjs/common";
 
-export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorator
+export const EncryptedBody: ((password?: IPassword | IPassword.Closure) => ParameterDecorator) = nest.createParamDecorator
 (
-    async function EncryptedBody({}: any, ctx: nest.ExecutionContext)
+    async function EncryptedBody
+        (
+            password: IPassword | IPassword.Closure | undefined, 
+            ctx: nest.ExecutionContext
+        )
     {
         const request: express.Request = ctx.switchToHttp().getRequest();
         if (request.readable === false)
             throw new HttpException("Request body is not the text/plain.", 500);
 
-        const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:password", ctx.getClass());
+        const param: IPassword | IPassword.Closure = password || Reflect.getMetadata("encryption:password", ctx.getClass());
         const content: string = (await raw(request, "utf8")).trim();
         const config: IPassword = (param instanceof Function)
             ? param(content, false)

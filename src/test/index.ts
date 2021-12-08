@@ -39,7 +39,11 @@ class TestController
     }
 
     @EncryptedRoute.Put("")
-    public async test(@EncryptedBody() input: { id: number, name: string }): Promise<{ content: string }>
+    public async test
+        (
+            @EncryptedBody(CONFIG) 
+            input: { id: number, name: string }
+        ): Promise<{ content: string }>
     {
         assertType<typeof input>(input);
         return { content: "YAHO" };
@@ -68,7 +72,7 @@ class TestFetcher extends EncryptedFetcher
         return this.fetch("POST", `/${id}`, input);
     }
 
-    public test(input: { id: number, name: string }): Promise<{ content: string }>
+    public test(input: { id: number, name: string }): Promise<void>
     {
         return this.fetch("PUT", "/", input);
     }
