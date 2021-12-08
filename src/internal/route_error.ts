@@ -9,9 +9,9 @@ export function route_error(error: any): Observable<never>
         return throwError(error);
 
     // CUSTOM-REGISTERED ERROR
-    for (const tuple of ExceptionManager.dictionary)
-        if (error instanceof tuple[0])
-            return throwError(tuple[1](error));
+    for (const [creator, closure] of ExceptionManager.tuples)
+        if (error instanceof creator)
+            return throwError(closure(error));
     
     // MAYBE INTERNAL ERROR
     return throwError(error);

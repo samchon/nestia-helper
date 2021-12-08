@@ -7,13 +7,22 @@ export namespace ExceptionManager
 {
     export function insert<T>(creator: Creator<T>, closure: Closure<T>): void
     {
-        if (dictionary.has(creator) === false)
-            dictionary.set(creator, closure);
+        const index: number = tuples.findIndex(tuple => tuple[0] === creator);
+        if (index !== -1)
+            tuples.splice(index, 1);
+        
+        tuples.push([creator, closure]);
+        tuples = tuples.sort(([x], [y]) => x.prototype instanceof y ? -1 : 1);
     }
 
     export function erase<T>(creator: Creator<T>): boolean
     {
-        return dictionary.delete(creator);
+        const index: number = tuples.findIndex(tuple => tuple[0] === creator);
+        if (index === -1)
+            return false;
+
+        tuples.splice(index, 1);
+        return true;
     }
 
     export type Closure<T> = (exception: T) => HttpException;
@@ -21,7 +30,7 @@ export namespace ExceptionManager
     /**
      * @internal
      */
-    export const dictionary: Map<Creator<any>, (exception: any) => HttpException> = new Map();
+    export let tuples: Array<[Creator<any>, Closure<any>]> = [];
 }
 
 ExceptionManager.insert(TypeGuardError, error => new HttpException({
