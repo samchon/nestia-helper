@@ -41,7 +41,7 @@ class TestController
     @EncryptedRoute.Put("")
     public async test
         (
-            @EncryptedBody(CONFIG) 
+            @EncryptedBody() 
             input: { id: number, name: string }
         ): Promise<{ content: string }>
     {
