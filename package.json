@@ -1,6 +1,6 @@
 {
   "name": "encrypted-nestjs",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "NestJS with AES Encryption",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
