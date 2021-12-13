@@ -4,7 +4,7 @@ import { createParamDecorator, ExecutionContext, BadRequestException } from '@ne
 
 export const PlainBody: (() => ParameterDecorator) = createParamDecorator
 (
-    async (_data: any, context: ExecutionContext) => 
+    async function PlainBody(_data: any, context: ExecutionContext)
     {
         const requeest: express.Request = context.switchToHttp().getRequest();
         if (!requeest.readable)
