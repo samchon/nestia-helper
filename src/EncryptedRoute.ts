@@ -13,7 +13,7 @@ import { EncryptedRouteInterceptor } from "./internal/EncryptedRouteInterceptor"
  * 
  * Therefore, with the `EncryptedRoute` and {@link ExceptionManger}, you can manage your
  * custom error classes much systematically. You can avoid 500 internal server error or
- * hard coding implementations by the custom error classes. 
+ * hard coding implementations about the custom error classes. 
  * 
  * Furthermore, you can enhance security of your HTTP server by encrypting the response 
  * body through this `EncryptedRoute`. Also, don't be annoying about such AES-128/256 
@@ -29,7 +29,7 @@ export namespace EncryptedRoute
      * Encrypted router decorator function for the GET method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Get(path?: string): MethodDecorator
     {
@@ -43,7 +43,7 @@ export namespace EncryptedRoute
      * Encrypted router decorator function for the POST method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Post(path?: string): MethodDecorator
     {
@@ -57,7 +57,7 @@ export namespace EncryptedRoute
      * Encrypted router decorator function for the PATH method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Patch(path?: string): MethodDecorator
     {
@@ -71,7 +71,7 @@ export namespace EncryptedRoute
      * Encrypted router decorator function for the PUT method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Put(path?: string): MethodDecorator
     {
@@ -85,7 +85,7 @@ export namespace EncryptedRoute
      * Encrypted router decorator function for the DELETE method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Delete(path?: string): MethodDecorator
     {

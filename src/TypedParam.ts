@@ -21,7 +21,8 @@ import * as express from 'express';
  * 
  * @param name URL Parameter name
  * @param type Type of the URL parameter
- * @returns Parameter decorator function
+ * @returns Parameter decorator
+ * 
  * @author Jeongho Nam - https://github.com/samchon
  */
 export function TypedParam(name: string, type: "boolean"|"number"|"string" = "string")

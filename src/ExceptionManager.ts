@@ -1,4 +1,4 @@
-import { HttpException } from "@nestjs/common";
+import * as nest from "@nestjs/common";
 import { HttpError } from "nestia-fetcher";
 import { TypeGuardError } from "typescript-is";
 
@@ -7,14 +7,28 @@ import { Creator } from "./typings/Creator";
 /**
  * Exception manager for HTTP server.
  * 
- * `ExceptionManager` is an utility class 
+ * `ExceptionManager` is an utility class who can insert or erase custom error class with 
+ * its convertion method to a regular {@link nest.HttpException} instance. 
+ * 
+ * If you define an API function through {@link TypedRoute} or {@link EncryptedRoute} 
+ * instead of the basic router decorator functions like {@link nest.Get} or 
+ * {@link nest.Post} and the API function throws a custom error whose class has been
+ * {@link ExceptionManager.insert inserted} in this `EntityManager`, the error would be 
+ * automatically converted to the regular {@link nest.HttpException} instance by the 
+ * {@link ExceptionManager.Closure} function.
+ * 
+ * Therefore, with this `ExceptionManager` and {@link TypedRoute} or {@link EncryptedRoute},
+ * you can manage your custom error classes much systemtically. You can avoid 500 internal
+ * server error or hard coding implementation about the custom error classes.
  * 
  * @author Jeongho Nam - https://github.com/samchon
  */
 export namespace ExceptionManager
 {
     /**
+     * Insert an error class with converter.
      * 
+     * If you've inserted an duplicated error class, the closure would be overwritten.
      * 
      * @param creator Target error class
      * @param closure A closure function converting to the `HttpException` class
@@ -34,7 +48,7 @@ export namespace ExceptionManager
     }
 
     /**
-     * 
+     * Erase an error class.
      * 
      * @param creator Target error class
      * @returns Whether be erased or not
@@ -53,14 +67,23 @@ export namespace ExceptionManager
     }
 
     /**
+     * Type of a closure function converting to the regular {@link nest.HttpException}.
      * 
+     * `ExceptionManager.Closure` is a type of closure function who are converting from
+     * custom error to the regular {@link nest.HttpException} instance. It would be used
+     * in the {@link ExceptionManager} with {@link TypedRoute} or {@link EncryptedRoute}.
      */
     export interface Closure<T extends Error>
     {
         /**
+         * Error converter.
          * 
+         * Convert from custom error to the regular {@link nest.HttpException} instance.
+         * 
+         * @param exception Custom error instance
+         * @return Regular {@link nest.HttpException} instance
          */
-        (exception: T): HttpException;
+        (exception: T): nest.HttpException;
     }
 
     /**
@@ -69,13 +92,13 @@ export namespace ExceptionManager
     export let tuples: Array<[Creator<any>, Closure<any>]> = [];
 }
 
-ExceptionManager.insert(TypeGuardError, error => new HttpException({
+ExceptionManager.insert(TypeGuardError, error => new nest.HttpException({
     path: error.path,
     reason: error.reason,
     message: "Request message is not following the promised type."
 }, 400));
 
-ExceptionManager.insert(HttpError, error => new HttpException({
+ExceptionManager.insert(HttpError, error => new nest.HttpException({
     path: error.path,
     message: error.message,
 }, error.status));

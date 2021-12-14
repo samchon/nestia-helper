@@ -13,7 +13,7 @@ import { TypedRouteInterceptor } from "./internal/TypedRouteInterceptor";
  * 
  * Therefore, with the `TypedRoute` and {@link ExceptionManger}, you can manage your 
  * custom error classes much systematically. You can avoid 500 internal server error or
- * hard coding implementations by the custom error classes.
+ * hard coding implementations about the custom error classes.
  * 
  * @author Jeongho Nam - https://github.com/samchon
  */
@@ -23,7 +23,7 @@ export namespace TypedRoute
      * Router decorator function for the GET method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Get(path?: string): MethodDecorator
     {
@@ -37,7 +37,7 @@ export namespace TypedRoute
      * Router decorator function for the POST method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Post(path?: string)
     {
@@ -51,7 +51,7 @@ export namespace TypedRoute
      * Router decorator function for the PATH method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Patch(path?: string)
     {
@@ -65,7 +65,7 @@ export namespace TypedRoute
      * Router decorator function for the PUT method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Put(path?: string)
     {
@@ -79,7 +79,7 @@ export namespace TypedRoute
      * Router decorator function for the DELETE method.
      * 
      * @param path Path of the HTTP request
-     * @returns Method decorator function
+     * @returns Method decorator
      */
     export function Delete(path?: string)
     {

@@ -1,1 +1,0 @@
-export type { IEncryptionPassword } from "nestia-fetcher";

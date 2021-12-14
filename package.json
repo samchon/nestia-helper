@@ -1,11 +1,11 @@
 {
   "name": "nestia-helper",
-  "version": "0.1.15",
-  "description": "NestJS with AES Encryption",
+  "version": "1.0.0",
+  "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -rf lib && ttsc",
+    "build": "rm -rf lib && tsc",
     "dev": "npm run build -- --watch",
     "test": "node lib/test"
   },
@@ -30,7 +30,6 @@
   "homepage": "https://github.com/samchon/nestia-helper#readme",
   "devDependencies": {
     "ts-node": "^10.4.0",
-    "ttypescript": "^1.5.13",
     "typescript": "^4.5.4"
   },
   "dependencies": {
@@ -38,7 +37,7 @@
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
     "@types/express": "x.x.x",
-    "nestia-fetcher": "^1.0.1",
+    "nestia-fetcher": "^1.0.2",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",

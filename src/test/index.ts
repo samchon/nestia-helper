@@ -1,16 +1,16 @@
 import { NestFactory } from "@nestjs/core";
-import { AesPkcs5, EncryptedFetcher } from "encrypted-fetcher";
+import { Controller } from "@nestjs/common";
+import { Fetcher, IConnection, IEncryptionPassword } from "nestia-fetcher";
+
 import { EncryptedBody } from "../EncryptedBody";
 import { EncryptedRoute } from "../EncryptedRoute";
-import { IPassword } from "../IPassword";
 import { TypedParam } from "../TypedParam";
 import { EncryptedModule } from "../EncryptedModule";
-import { Controller } from "@nestjs/common";
 import { assertType } from "typescript-is";
 
-const CONFIG: IPassword = {
-    key: AesPkcs5.random(16),
-    iv: AesPkcs5.random(16)
+const ENCRYPTION_PASSWORD: IEncryptionPassword = {
+    key: "abcd".repeat(8),
+    iv: "abcd".repeat(4)
 }
 
 @Controller()
@@ -41,8 +41,7 @@ class TestController
     @EncryptedRoute.Put("")
     public async test
         (
-            @EncryptedBody() 
-            input: { id: number, name: string }
+            @EncryptedBody() input: { id: number, name: string }
         ): Promise<{ content: string }>
     {
         assertType<typeof input>(input);
@@ -50,31 +49,49 @@ class TestController
     }
 }
 
-@EncryptedModule({ controllers: [ TestController ] }, CONFIG)
+@EncryptedModule({ controllers: [ TestController ] }, ENCRYPTION_PASSWORD)
 class TestModule
 {
 }
 
-class TestFetcher extends EncryptedFetcher
+namespace TestFetcher
 {
-    public constructor()
+    const connection: IConnection = {
+        host: "http://127.0.0.1:36999",
+        encryption: ENCRYPTION_PASSWORD
+    };
+
+    export function index(): Promise<{ id: number, name: string }>
     {
-        super("http://127.0.0.1:36999", CONFIG);
+        return Fetcher.fetch(connection, { response: true }, "GET", "/index.html");
     }
 
-    public index(): Promise<{ id: number, name: string }>
+    export function something<T extends object>
+        (
+            id: number, 
+            input: T
+        ): Promise<{ id: number, input: T }>
     {
-        return this.fetch("GET", "/index.html");
+        return Fetcher.fetch<T, any>
+        (
+            connection, 
+            { request: true, response: true }, 
+            "POST", 
+            `/${id}`, 
+            input
+        );
     }
 
-    public something<T extends object>(id: number, input: T): Promise<{ id: number, input: T }>
+    export function test(input: { id: number, name: string }): Promise<object>
     {
-        return this.fetch("POST", `/${id}`, input);
-    }
-
-    public test(input: { id: number, name: string }): Promise<void>
-    {
-        return this.fetch("PUT", "/", input);
+        return Fetcher.fetch
+        (
+            connection,
+            { request: true, response: true }, 
+            "PUT",
+            `/${input.id}`,
+            input
+        );
     }
 }
 
@@ -85,18 +102,17 @@ async function main(): Promise<void>
     await app.listen(36999);
 
     // REQUESTS BY CLIENT
-    const fetcher = new TestFetcher();
-    const index = await fetcher.index();
+    const index = await TestFetcher.index();
     if (index.id !== 1 || index.name !== "Samchon")
         throw new Error("Bug on GET /index.html");
 
-    const something = await fetcher.something(3, { text: "yaho" });
+    const something = await TestFetcher.something(3, { text: "yaho" });
     if (something.id !== 3 || something.input.text !== "yaho")
         throw new Error("Bug on POST /something");
 
     try
     {
-        await fetcher.test({ id: 3, name: 4 } as any);
+        await TestFetcher.test({ id: 3, name: 4 } as any);
         throw new Error("Bug on PUT /test: type checker does not work.");
     }
     catch {}
