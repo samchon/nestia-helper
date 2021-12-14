@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as nest from "@nestjs/common";
 
-import { IPassword } from "encrypted-fetcher";
+import { IEncryptionPassword } from "nestia-fetcher/lib/IEncryptionPassword";
 
 export function EncryptedModule
     (
         metadata: nest.ModuleMetadata,
-        password: IPassword | IPassword.Closure
+        password: IEncryptionPassword | IEncryptionPassword.Closure
     ): ClassDecorator
 {
     return function (target: any)
@@ -23,7 +23,7 @@ export namespace EncryptedModule
     export async function dynamic
         (
             path: string, 
-            config: IPassword | IPassword.Closure
+            config: IEncryptionPassword | IEncryptionPassword.Closure
         ): Promise<object>
     {
         // LOAD CONTROLLERS
@@ -40,7 +40,7 @@ export namespace EncryptedModule
     export async function controllers
         (
             path: string, 
-            password: IPassword | IPassword.Closure
+            password: IEncryptionPassword | IEncryptionPassword.Closure
         ): Promise<any[]>
     {
         const output: any[] = [];

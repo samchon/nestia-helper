@@ -1,6 +1,29 @@
 import * as nest from "@nestjs/common";
 import * as express from 'express';
 
+/**
+ * URL parameter decorator with type.
+ * 
+ * `TypedParam` is a decorator function getting specific typed parameter from the HTTP 
+ * request URL. It's almost same with the {@link nest.Param}, but `TypedParam` can specify
+ * the parameter type manually. Beside, the {@link nest.Param} always parses all of the 
+ * parameters as string type.
+ * 
+ * ```typescript
+ * \@TypedRoute.Get("/shopping/sales/:section/:id/:paused")
+ * export function pause
+ *     (
+ *         \@TypedParam("section", "string") section: string,
+ *         \@TypedParam("id", "string") id: string,
+ *         \@TypedParam("paused", "boolean") paused: boolean
+ *     ): void;
+ * ```
+ * 
+ * @param name URL Parameter name
+ * @param type Type of the URL parameter
+ * @returns Parameter decorator function
+ * @author Jeongho Nam - https://github.com/samchon
+ */
 export function TypedParam(name: string, type: "boolean"|"number"|"string" = "string")
 {
     return nest.createParamDecorator

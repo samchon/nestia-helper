@@ -1,5 +1,5 @@
 {
-  "name": "encrypted-nestjs",
+  "name": "nestia-helper",
   "version": "0.1.15",
   "description": "NestJS with AES Encryption",
   "main": "lib/index.js",
@@ -11,33 +11,34 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/samchon/encrypted-nestjs"
+    "url": "https://github.com/samchon/nestia-helper"
   },
   "keywords": [
     "nestjs",
     "aes",
     "encryption",
     "api",
-    "fetcher"
+    "fetcher",
+    "nestia",
+    "helper"
   ],
   "author": "Jeongho Nam",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/samchon/encrypted-nestjs/issues"
+    "url": "https://github.com/samchon/nestia-helper/issues"
   },
-  "homepage": "https://github.com/samchon/encrypted-nestjs#readme",
+  "homepage": "https://github.com/samchon/nestia-helper#readme",
   "devDependencies": {
-    "@types/node": "^14.6.0",
-    "ts-node": "^9.1.1",
-    "ttypescript": "^1.5.12",
-    "typescript": "^4.0.2"
+    "ts-node": "^10.4.0",
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.5.4"
   },
   "dependencies": {
     "@nestjs/common": "x.x.x",
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
     "@types/express": "x.x.x",
-    "encrypted-fetcher": "^0.1.0",
+    "nestia-fetcher": "^1.0.1",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",

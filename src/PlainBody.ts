@@ -2,6 +2,9 @@ import * as express from "express";
 import raw from 'raw-body';
 import { createParamDecorator, ExecutionContext, BadRequestException } from '@nestjs/common';
 
+/**
+ * @return Parameter decorator function
+ */
 export const PlainBody: (() => ParameterDecorator) = createParamDecorator
 (
     async function PlainBody(_data: any, context: ExecutionContext)

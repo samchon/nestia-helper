@@ -1,10 +1,11 @@
 import { Controller } from "@nestjs/common";
-import { IPassword } from "./IPassword";
+import { IEncryptionPassword } from "./IEncryptionPassword";
 
-export function EncryptedController(path: string, password: IPassword): ClassDecorator;
-export function EncryptedController(path: string, closure: IPassword.Closure): ClassDecorator;
-
-export function EncryptedController(path: string, password: IPassword | IPassword.Closure): ClassDecorator
+export function EncryptedController
+    (
+        path: string, 
+        password: IEncryptionPassword | IEncryptionPassword.Closure
+    ): ClassDecorator
 {
     return function (target: any)
     {

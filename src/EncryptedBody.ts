@@ -1,10 +1,10 @@
 import * as express from "express";
 import * as nest from "@nestjs/common";
 import raw from "raw-body";
-
-import { IPassword } from "./IPassword";
-import { AesPkcs5 } from "encrypted-fetcher";
+import { AesPkcs5 } from "nestia-fetcher";
 import { HttpException } from "@nestjs/common";
+
+import { IEncryptionPassword } from "./IEncryptionPassword";
 
 export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorator
 (
@@ -14,12 +14,12 @@ export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorat
         if (request.readable === false)
             throw new HttpException("Request body is not the text/plain.", 500);
 
-        const param: IPassword | IPassword.Closure = Reflect.getMetadata("encryption:password", context.getClass());
+        const param: IEncryptionPassword | IEncryptionPassword.Closure = Reflect.getMetadata("encryption:password", context.getClass());
         const content: string = (await raw(request, "utf8")).trim();
-        const config: IPassword = (param instanceof Function)
+        const config: IEncryptionPassword = (param instanceof Function)
             ? param(content, false)
             : param;
 
-        return JSON.parse(AesPkcs5.decode(content, config.key, config.iv));
+        return JSON.parse(AesPkcs5.decrypt(content, config.key, config.iv));
     }
 );
