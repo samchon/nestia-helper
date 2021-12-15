@@ -18,7 +18,7 @@ import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
  * 
  * Of course, if you want to use different encryption password from the 
  * {@link EncryptedModule}, this `EncryptedController` would be useful again. Therefore,
- * I recommend to use this `EncryptedModule` decorator function only when you must
+ * I recommend to use this `EncryptedController` decorator function only when you must
  * configure different encryption password from the {@link EncryptedModule}.
  * 
  * @param path Path of the HTTP request

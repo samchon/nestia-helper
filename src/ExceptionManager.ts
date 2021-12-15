@@ -21,6 +21,11 @@ import { Creator } from "./typings/Creator";
  * you can manage your custom error classes much systemtically. You can avoid 500 internal
  * server error or hard coding implementation about the custom error classes.
  * 
+ * Below error classes are defaultly configured in this `ExceptionManager`
+ * 
+ *   - `typescript-is.TypeGuardError`
+ *   - `nestia-fetcher.HttpError`
+ * 
  * @author Jeongho Nam - https://github.com/samchon
  */
 export namespace ExceptionManager

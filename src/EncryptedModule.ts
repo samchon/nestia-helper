@@ -23,6 +23,11 @@ import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
  * module level. If not, I recommend you use the {@link nest.Controller} decorator 
  * function instead.
  * 
+ * In addition, the `EncryptedModule` supports a convenient dynamic controller importing 
+ * function, {@link EncryptedModule.dynamic}. If you utilize the function with directory 
+ * path of the controller classes, it imports and configures the controller classes into
+ * the `nest.Module`, automatically.
+ * 
  * @param metadata Module configuration metadata
  * @param password Encryption password or its getter function
  * @returns Class decorator

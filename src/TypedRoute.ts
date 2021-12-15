@@ -4,7 +4,7 @@ import { TypedRouteInterceptor } from "./internal/TypedRouteInterceptor";
 /**
  * Router decorator functions.
  * 
- * `TypedRoute` is a utility class containing router decorator functions.
+ * `TypedRoute` is an utility class containing router decorator functions.
  * 
  * Unlike the basic router decorator functions provided from the NestJS like 
  * {@link nest.Get} or {@link nest.Post}, router decorator functions in the `TypedRoute`

@@ -13,8 +13,8 @@ import * as nest from '@nestjs/common';
  * decorator function to get the full body text.  
  * 
  * ```typescript
- * \@TypedRoute.Post("/contents")
- * export function store
+ * \@TypedRoute.Post("memo")
+ * public store
  *     (
  *         \@PlainBody() body: string
  *     ): void;

@@ -10,13 +10,13 @@ import * as express from 'express';
  * parameters as string type.
  * 
  * ```typescript
- * \@TypedRoute.Get("/shopping/sales/:section/:id/:paused")
- * export function pause
+ * \@TypedRoute.Get("shopping/sales/:section/:id/:paused")
+ * public async pause
  *     (
  *         \@TypedParam("section", "string") section: string,
- *         \@TypedParam("id", "string") id: string,
+ *         \@TypedParam("id", "number") id: number,
  *         \@TypedParam("paused", "boolean") paused: boolean
- *     ): void;
+ *     ): Promise<void>;
  * ```
  * 
  * @param name URL Parameter name

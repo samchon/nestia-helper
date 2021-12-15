@@ -4,7 +4,7 @@ import { EncryptedRouteInterceptor } from "./internal/EncryptedRouteInterceptor"
 /**
  * Encrypted router decorator functions.
  * 
- * `EncryptedRout` is a utility class containing encrypted router decorator functions.
+ * `EncryptedRout` is an utility class containing encrypted router decorator functions.
  * Unlike the basic router decorator functions provided from the NestJS like 
  * {@link nest.Get} or {@link nest.Post}, router decorator functions in the 
  * `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they
