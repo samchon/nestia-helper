@@ -21,7 +21,7 @@ Of course, this `nestia-helper` is not essential for utilizing the `NestJS` and 
 ### EncryptedRoute
 Encrypted router decorator functions.
 
-`EncryptedRout` is an utility class containing encrypted router decorator functions. Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get()` or `nest.Post()`, router decorator functions in the `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they support the [ExceptionManager](#exception-manager) who can convert custom error classes to the regular `nest.HttpException` class.
+`EncryptedRoute` is an utility class containing encrypted router decorator functions. Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get()` or `nest.Post()`, router decorator functions in the `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they support the [ExceptionManager](#exception-manager) who can convert custom error classes to the regular `nest.HttpException` class.
 
 Therefore, with the `EncryptedRoute` and [ExceptionManager](#exception-manager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
 
