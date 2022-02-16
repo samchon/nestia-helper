@@ -25,21 +25,41 @@ import * as express from 'express';
  * 
  * @author Jeongho Nam - https://github.com/samchon
  */
-export function TypedParam(name: string, type: "boolean"|"number"|"string" = "string")
+export function TypedParam(name: string, type: "boolean"|"number"|"string"|"uuid" = "string")
 {
     return nest.createParamDecorator
     (
         function TypedParam({}: any, ctx: nest.ExecutionContext)
         {
             const request: express.Request = ctx.switchToHttp().getRequest();
-            const ret: string = request.params[name];
+            const str: string = request.params[name];
             
             if (type === "boolean")
-                return ret !== "false";
+            {
+                if (str === "true" || str === "1")
+                    return true;
+                else if (str === "false" || str === "0")
+                    return false;
+                else
+                    throw new nest.BadRequestException(`Value of the URL parameter '${name}' is not a boolean.`);
+            }
             else if (type === "number")
-                return Number(ret)
+            {
+                const value: number = Number(str);
+                if (isNaN(value))
+                    throw new nest.BadRequestException(`Value of the URL parameter "${name}" is not a number.`);
+                return value;
+            }
+            else if (type === "uuid")
+            {
+                if (UUID_PATTERN.test(str) === false)
+                    throw new nest.BadRequestException(`Value of the URL parameter "${name}" is not a valid UUID.`);
+                return str;
+            }
             else
-                return ret;
+                return str;
         }
     )(name);
 }
+
+const UUID_PATTERN = /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i;

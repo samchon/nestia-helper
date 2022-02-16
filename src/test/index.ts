@@ -47,6 +47,15 @@ class TestController
         assertType<typeof input>(input);
         return { content: "YAHO" };
     }
+
+    @EncryptedRoute.Get("uuid/:id")
+    public uuid
+        (
+            @TypedParam("id", "uuid") id: string
+        ): object
+    {
+        return { id };
+    }
 }
 
 @EncryptedModule({ controllers: [ TestController ] }, ENCRYPTION_PASSWORD)
@@ -93,6 +102,17 @@ namespace TestFetcher
             input
         );
     }
+
+    export function uuid(id: string): Promise<object>
+    {
+        return Fetcher.fetch
+        (
+            connection,
+            { request: true, response: true },
+            "GET",
+            `/uuid/${id}`
+        );
+    }
 }
 
 async function main(): Promise<void>
@@ -114,6 +134,14 @@ async function main(): Promise<void>
     {
         await TestFetcher.test({ id: 3, name: 4 } as any);
         throw new Error("Bug on PUT /test: type checker does not work.");
+    }
+    catch {}
+
+    await TestFetcher.uuid("1dad5e14-9152-4633-aaa5-578e3f6a689a");
+    try
+    {
+        await TestFetcher.uuid("NULL");
+        throw new Error("Bug on GET /uuid/:id: uuid type checker is not working.");
     }
     catch {}
 

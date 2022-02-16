@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import raw from 'raw-body';
 import * as nest from '@nestjs/common';
 
