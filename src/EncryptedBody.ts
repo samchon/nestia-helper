@@ -17,9 +17,12 @@ const default_closure = () => false as const;
  * for enhancing security by hiding request body data from the client.
  * 
  * Also you don't need to worry about the annyoing encryption and decryption. If you build
- * an SDK library of your HTTP server through the 
- * [nestia](https://github.com/samchon/nestia), such encryption would be automatically 
- * done in the SDK level.
+ * an SDK library of your HTTP server through the [nestia](https://github.com/samchon/nestia), 
+ * such encryption would be automatically done in the SDK level.
+ * 
+ * However, if you configure the *disable* parameter to return `true`, you can disable the
+ * encryption and decryption algorithm. Therefore, when the closure function *disable* 
+ * returns the `true`, response body would be considered as a plain text instead.
  * 
  * @param disable Whether to disable the request body encryption or not. Default is `() => false`.
  * @return Parameter decorator

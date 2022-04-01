@@ -21,6 +21,10 @@ import { EncryptedRouteInterceptor } from "./internal/EncryptedRouteInterceptor"
  * the [nestia](https://github.com/samchon/nestia), such encryption and decryption would 
  * be automatically done in the SDK level.
  * 
+ * However, if you configure the *disable* parameter to return `true`, you can disable the
+ * encryption and decryption algorithm. Therefore, when the closure function *disable* 
+ * returns the `true`, response body would be considered as a plain text instead.
+ * 
  * @author Jeongho Nam - https://github.com/samchon
  */
 export namespace EncryptedRoute
