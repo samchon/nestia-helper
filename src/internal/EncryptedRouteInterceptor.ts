@@ -8,28 +8,35 @@ import { route_error } from "./route_error";
 
 export class EncryptedRouteInterceptor implements nest.NestInterceptor
 {
-    public constructor(public readonly disable?: (ctx: nest.ExecutionContext) => boolean)
+    public constructor(public readonly method: string)
     {
     }
 
     public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
     {
-        const param: IEncryptionPassword | IEncryptionPassword.Closure = Reflect.getMetadata
-        (
-            ENCRYPTION_METADATA_KEY, 
-            ctx.getClass()
-        );
-
         return next.handle().pipe(
             map(value => 
             {
+                const param: IEncryptionPassword | IEncryptionPassword.Closure | undefined = Reflect.getMetadata
+                (
+                    ENCRYPTION_METADATA_KEY, 
+                    ctx.getClass()
+                );
+                if (!param)
+                    throw new Error(`Error on EncryptedBody.${this.method}(): no encryption password is given.`);
+
                 const content: string = JSON.stringify(value);
-                if (this.disable && this.disable(ctx) === true)
+                const password: IEncryptionPassword = typeof param === "function"
+                    ? param(content, false)
+                    : param;
+                const disabled: boolean = password.disabled === undefined
+                    ? false
+                    : typeof password.disabled === "function" ? password.disabled(content, false) 
+                    : password.disabled;
+
+                if (disabled === true)
                     return content;
 
-                const password: IEncryptionPassword = (param instanceof Function)
-                    ? param(content, true)
-                    : param;
                 return AesPkcs5.encrypt(content, password.key, password.iv);
             }),
             catchError(err => route_error(err)),
