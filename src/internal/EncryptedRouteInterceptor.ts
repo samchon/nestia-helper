@@ -8,6 +8,10 @@ import { route_error } from "./route_error";
 
 export class EncryptedRouteInterceptor implements nest.NestInterceptor
 {
+    public constructor(public readonly disable?: (ctx: nest.ExecutionContext) => boolean)
+    {
+    }
+
     public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
     {
         const param: IEncryptionPassword | IEncryptionPassword.Closure = Reflect.getMetadata
@@ -20,6 +24,9 @@ export class EncryptedRouteInterceptor implements nest.NestInterceptor
             map(value => 
             {
                 const content: string = JSON.stringify(value);
+                if (this.disable && this.disable(ctx) === true)
+                    return content;
+
                 const password: IEncryptionPassword = (param instanceof Function)
                     ? param(content, true)
                     : param;
