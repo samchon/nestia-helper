@@ -6,6 +6,9 @@ import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
 
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
 
+const storage: WeakMap<(ctx: nest.ExecutionContext) => boolean, () => ParameterDecorator> = new WeakMap();
+const default_closure = () => false as const;
+
 /**
  * Encrypted body decorator.
  * 
@@ -14,31 +17,56 @@ import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
  * for enhancing security by hiding request body data from the client.
  * 
  * Also you don't need to worry about the annyoing encryption and decryption. If you build
- * an SDK library of your HTTP server through the 
- * [nestia](https://github.com/samchon/nestia), such encryption would be automatically 
- * done in the SDK level.
+ * an SDK library of your HTTP server through the [nestia](https://github.com/samchon/nestia), 
+ * such encryption would be automatically done in the SDK level.
  * 
+ * However, if you configure the *disable* parameter to return `true`, you can disable the
+ * encryption and decryption algorithm. Therefore, when the closure function *disable* 
+ * returns the `true`, response body would be considered as a plain text instead.
+ * 
+ * @param disable Whether to disable the request body encryption or not. Default is `() => false`.
  * @return Parameter decorator
  * @author Jeongho Nam - https://github.com/samchon
  */
-export const EncryptedBody: (() => ParameterDecorator) = nest.createParamDecorator
-(
-    async function EncryptedBody({}: any, context: nest.ExecutionContext)
-    {
-        const request: express.Request = context.switchToHttp().getRequest();
-        if (request.readable === false)
-            throw new HttpException("Request body is not the text/plain.", 400);
+export function EncryptedBody
+    (
+        disable: (ctx: nest.ExecutionContext) => boolean = default_closure
+    ): ParameterDecorator
+{
+    if (!disable)
+        disable = default_closure;
 
-        const param: IEncryptionPassword | IEncryptionPassword.Closure = Reflect.getMetadata
-        (
-            ENCRYPTION_METADATA_KEY, 
-            context.getClass()
-        );
-        const content: string = (await raw(request, "utf8")).trim();
-        const config: IEncryptionPassword = (param instanceof Function)
-            ? param(content, false)
-            : param;
+    const oldbie = storage.get(disable);
+    if (oldbie)
+        return oldbie();
 
-        return JSON.parse(AesPkcs5.decrypt(content, config.key, config.iv));
-    }
-);
+    const func: () => ParameterDecorator = nest.createParamDecorator
+    (
+        async function EncryptedBody({}: any, ctx: nest.ExecutionContext)
+        {
+            const request: express.Request = ctx.switchToHttp().getRequest();
+            if (request.readable === false)
+                throw new HttpException("Request body is not the text/plain.", 400);
+    
+            const param: IEncryptionPassword | IEncryptionPassword.Closure = Reflect.getMetadata
+            (
+                ENCRYPTION_METADATA_KEY, 
+                ctx.getClass()
+            );
+            const content: string = (await raw(request, "utf8")).trim();
+            const config: IEncryptionPassword = (param instanceof Function)
+                ? param(content, false)
+                : param;
+    
+            return JSON.parse
+            (
+                disable!(ctx) 
+                    ? content 
+                    : AesPkcs5.decrypt(content, config.key, config.iv)
+            );
+        }
+    );
+
+    storage.set(disable, func);
+    return func();
+}
