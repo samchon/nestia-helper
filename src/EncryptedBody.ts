@@ -1,10 +1,12 @@
-import * as express from "express";
+import express from "express";
 import * as nest from "@nestjs/common";
 import raw from "raw-body";
 import { HttpException } from "@nestjs/common";
 import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
 
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
+import { Singleton } from "./internal/Singleton";
+import { headers_to_object } from "./internal/headers_to_object";
 
 /**
  * Encrypted body decorator.
@@ -42,20 +44,22 @@ export const EncryptedBody = nest.createParamDecorator
         if (!param)
             throw new Error("Error on EncryptedBody(): no encryption password is given.");
 
-        const content: string = (await raw(request, "utf8")).trim();
+        const headers: Singleton<Record<string, string>> = new Singleton(() => headers_to_object(request.headers));
+        const body: string = (await raw(request, "utf8")).trim();
         const password: IEncryptionPassword = typeof param === "function"
-            ? param(content, false)
+            ? param({ headers: headers.get(), body }, false)
             : param;
         const disabled: boolean = password.disabled === undefined
             ? false
-            : typeof password.disabled === "function" ? password.disabled(content, true) 
-            : password.disabled;
+            : typeof password.disabled === "function" 
+                ? password.disabled({ headers: headers.get(), body }, true) 
+                : password.disabled;
 
         return JSON.parse
         (
             disabled
-                ? content 
-                : AesPkcs5.decrypt(content, password.key, password.iv)
+                ? body 
+                : AesPkcs5.decrypt(body, password.key, password.iv)
         );
     }
 );
