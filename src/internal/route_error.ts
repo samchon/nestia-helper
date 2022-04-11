@@ -2,6 +2,9 @@ import { HttpException } from "@nestjs/common";
 import { Observable, throwError } from "rxjs";
 import { ExceptionManager } from "../ExceptionManager";
 
+/**
+ * @internal
+ */
 export function route_error(error: any): Observable<never>
 {
     // HTTP-ERROR
