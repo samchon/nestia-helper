@@ -15,7 +15,7 @@ import * as express from 'express';
  *     (
  *         \@TypedParam("section", "string") section: string,
  *         \@TypedParam("id", "number") id: number,
- *         \@TypedParam("paused", "boolean") paused: boolean
+ *         \@TypedParam("paused", "boolean", true) paused: boolean | null
  *     ): Promise<void>;
  * ```
  * 
@@ -25,7 +25,12 @@ import * as express from 'express';
  * 
  * @author Jeongho Nam - https://github.com/samchon
  */
-export function TypedParam(name: string, type: "boolean"|"number"|"string"|"uuid" = "string")
+export function TypedParam
+    (
+        name: string, 
+        type: "boolean"|"number"|"string"|"uuid" = "string",
+        nullable: boolean = false
+    )
 {
     return nest.createParamDecorator
     (
@@ -34,7 +39,9 @@ export function TypedParam(name: string, type: "boolean"|"number"|"string"|"uuid
             const request: express.Request = ctx.switchToHttp().getRequest();
             const str: string = request.params[name];
             
-            if (type === "boolean")
+            if (nullable === true && str === "null")
+                return null;
+            else if (type === "boolean")
             {
                 if (str === "true" || str === "1")
                     return true;
