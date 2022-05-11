@@ -1,7 +1,7 @@
 import express from "express";
 import * as nest from "@nestjs/common";
 import raw from "raw-body";
-import { HttpException } from "@nestjs/common";
+import { BadRequestException, HttpException } from "@nestjs/common";
 import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
 
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
@@ -59,7 +59,22 @@ export const EncryptedBody = nest.createParamDecorator
         (
             disabled
                 ? body 
-                : AesPkcs5.decrypt(body, password.key, password.iv)
+                : decrypt(body, password.key, password.iv)
         );
     }
 );
+
+function decrypt(body: string, key: string, iv: string): string
+{
+    try
+    {
+        return AesPkcs5.decrypt(body, key, iv);
+    }
+    catch (exp)
+    {
+        if (exp instanceof Error)
+            throw new BadRequestException("Failed to decrypt the request body. Check your body content or encryption password.");
+        else
+            throw exp;
+    }
+}
