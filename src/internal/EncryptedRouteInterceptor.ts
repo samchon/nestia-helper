@@ -14,7 +14,11 @@ import { route_error } from "./route_error";
  */
 export class EncryptedRouteInterceptor implements nest.NestInterceptor
 {
-    public constructor(public readonly method: string)
+    public constructor
+        (
+            private readonly method: string,
+            private readonly stringify: (input: any) => string
+        )
     {
     }
 
@@ -29,14 +33,14 @@ export class EncryptedRouteInterceptor implements nest.NestInterceptor
                     ctx.getClass()
                 );
                 if (!param)
-                    throw new Error(`Error on EncryptedBody.${this.method}(): no encryption password is given.`);
+                    throw new Error(`Error on EncryptedRoute.${this.method}(): no encryption password is given.`);
 
                 const headers: Singleton<Record<string, string>> = new Singleton(() =>
                 {
                     const request: express.Request = ctx.switchToHttp().getRequest();
                     return headers_to_object(request.headers);
                 });
-                const body: string = JSON.stringify(value);
+                const body: string = this.stringify(value);
                 const password: IEncryptionPassword = typeof param === "function"
                     ? param({ headers: headers.get(), body }, false)
                     : param;

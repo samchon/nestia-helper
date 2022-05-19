@@ -9,11 +9,18 @@ import { route_error } from "./route_error";
  */
 export class TypedRouteInterceptor implements nest.NestInterceptor
 {
+    public constructor
+        (
+            private readonly stringify: (input: any) => string
+        )
+    {
+    }
+
     public intercept({}: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
     {
         return next.handle().pipe
         (
-            map(value => value),
+            map(value => this.stringify(value)),
             catchError(err => route_error(err)),
         );
     }
