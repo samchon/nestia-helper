@@ -1,13 +1,15 @@
 {
   "name": "nestia-helper",
-  "version": "2.1.0-dev.20220518",
+  "version": "2.1.0-dev.20220522",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "build": "rm -rf lib && tsc",
+    "build": "rimraf lib && tsc",
+    "build:test": "rimraf bin && ttsc -p test/tsconfig.json",
     "dev": "npm run build -- --watch",
-    "test": "node lib/test"
+    "dev:test": "npm run build:test -- --watch",
+    "test": "npm run build:test && node bin/test"
   },
   "repository": {
     "type": "git",
@@ -29,7 +31,13 @@
   },
   "homepage": "https://github.com/samchon/nestia-helper#readme",
   "devDependencies": {
+    "@types/nested-error-stacks": "^2.1.0",
+    "git-last-commit": "^1.0.1",
+    "nestia": "^2.1.4",
+    "rimraf": "^3.0.2",
+    "suppress-warnings": "^1.0.2",
     "ts-node": "^10.4.0",
+    "ttypescript": "^1.5.13",
     "typescript": "^4.5.4"
   },
   "dependencies": {
@@ -37,6 +45,7 @@
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
     "@types/express": "x.x.x",
+    "nested-error-stacks": "^2.1.1",
     "nestia-fetcher": "^2.0.1",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",

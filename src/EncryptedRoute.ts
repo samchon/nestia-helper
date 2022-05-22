@@ -74,8 +74,8 @@ export namespace EncryptedRoute
 
     function Generator(method: "Get"|"Post"|"Put"|"Patch"|"Delete")
     {
-        function create(path?: string | string[]): MethodDecorator;
-        function create(...args: any[]): MethodDecorator
+        function route(path?: string | string[]): MethodDecorator;
+        function route(...args: any[]): MethodDecorator
         {
             const [path, stringify] = get_route_arguments(...args);
             return nest.applyDecorators(
@@ -83,6 +83,6 @@ export namespace EncryptedRoute
                 nest.UseInterceptors(new EncryptedRouteInterceptor(method, stringify))
             );
         }
-        return create;
+        return route;
     }
 }
