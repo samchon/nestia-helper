@@ -1,8 +1,7 @@
 import express from "express";
-import * as nest from "@nestjs/common";
 import raw from "raw-body";
-import { BadRequestException, HttpException } from "@nestjs/common";
 import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
+import { BadRequestException, createParamDecorator, ExecutionContext, HttpException } from "@nestjs/common";
 
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
 import { Singleton } from "./internal/Singleton";
@@ -11,7 +10,7 @@ import { headers_to_object } from "./internal/headers_to_object";
 /**
  * Encrypted body decorator.
  * 
- * `EncryptedBody` is a decorator function getting special JSON data from the HTTP request 
+ * `EncryptedBody` is a decoratord function getting special JSON data from the HTTP request 
  * who've encrypted by the AES-125/256 algorithm. Therefore, `EncryptedBody` is suitable
  * for enhancing security by hiding request body data from the client.
  * 
@@ -28,9 +27,9 @@ import { headers_to_object } from "./internal/headers_to_object";
  * @return Parameter decorator
  * @author Jeongho Nam - https://github.com/samchon
  */
-export const EncryptedBody = nest.createParamDecorator
+export const EncryptedBody = createParamDecorator
 (
-    async function EncryptedBody({}: any, ctx: nest.ExecutionContext)
+    async function EncryptedBody({}: any, ctx: ExecutionContext)
     {
         const request: express.Request = ctx.switchToHttp().getRequest();
         if (request.readable === false)

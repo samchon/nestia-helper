@@ -7,11 +7,14 @@ import { Singleton } from "tstl/thread/Singleton";
 import { randint } from "tstl/algorithm/random";
 
 import { ISystem } from "../api/structures/ISystem";
+import TSON from "typescript-json";
+
+const stringify = TSON.createStringifier<ISystem>();
 
 @nest.Controller("system")
 export class SystemController
 {
-    @helper.EncryptedRoute.Get()
+    @helper.EncryptedRoute.Get(stringify)
     public async get(): Promise<ISystem>
     {
         return {

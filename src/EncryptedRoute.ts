@@ -54,7 +54,7 @@ export namespace EncryptedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export const Path = Generator("Patch");
+    export const Patch = Generator("Patch");
 
     /**
      * Encrypted router decorator function for the PUT method.
@@ -75,6 +75,9 @@ export namespace EncryptedRoute
     function Generator(method: "Get"|"Post"|"Put"|"Patch"|"Delete")
     {
         function route(path?: string | string[]): MethodDecorator;
+        function route(stringify?: (input: any) => string): MethodDecorator;
+        function route(path: string | string[], stringify: (input: any) => string): MethodDecorator;
+
         function route(...args: any[]): MethodDecorator
         {
             const [path, stringify] = get_route_arguments(...args);

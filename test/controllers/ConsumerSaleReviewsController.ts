@@ -1,14 +1,17 @@
 import * as nest from "@nestjs/common";
+import TSON from "typescript-json";
 
 import { SaleInquiriesController } from "./SaleInquiriesController";
 import { ISaleReview } from "../api/structures/ISaleReview";
+
+const stringify = TSON.createStringifier<ISaleReview>();
 
 @nest.Controller("consumers/:section/sales/:saleId/reviews")
 export class ConsumerSaleReviewsController
     extends SaleInquiriesController<
         ISaleReview.IContent, 
         ISaleReview.IStore, 
-        ISaleReview>
+        ISaleReview>(stringify)
 {
     public constructor()
     {

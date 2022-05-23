@@ -1,5 +1,6 @@
-import * as nest from "@nestjs/common";
+
 import { HttpError } from "nestia-fetcher";
+import { HttpException } from "@nestjs/common";
 import { TypeGuardError } from "typescript-is";
 
 import { Creator } from "./typings/Creator";
@@ -88,7 +89,7 @@ export namespace ExceptionManager
          * @param exception Custom error instance
          * @return Regular {@link nest.HttpException} instance
          */
-        (exception: T): nest.HttpException;
+        (exception: T): HttpException;
     }
 
     /**
@@ -97,13 +98,13 @@ export namespace ExceptionManager
     export let tuples: Array<[Creator<any>, Closure<any>]> = [];
 }
 
-ExceptionManager.insert(TypeGuardError, error => new nest.HttpException({
+ExceptionManager.insert(TypeGuardError, error => new HttpException({
     path: error.path,
     reason: error.reason,
     message: "Request message is not following the promised type."
 }, 400));
 
-ExceptionManager.insert(HttpError, error => new nest.HttpException({
+ExceptionManager.insert(HttpError, error => new HttpException({
     path: error.path,
     message: error.message,
 }, error.status));

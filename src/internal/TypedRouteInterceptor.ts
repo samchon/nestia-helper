@@ -1,4 +1,4 @@
-import * as nest from "@nestjs/common";
+import { NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -7,7 +7,7 @@ import { route_error } from "./route_error";
 /**
  * @internal
  */
-export class TypedRouteInterceptor implements nest.NestInterceptor
+export class TypedRouteInterceptor implements NestInterceptor
 {
     public constructor
         (
@@ -16,7 +16,7 @@ export class TypedRouteInterceptor implements nest.NestInterceptor
     {
     }
 
-    public intercept({}: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
+    public intercept({}: ExecutionContext, next: CallHandler): Observable<any>
     {
         return next.handle().pipe
         (

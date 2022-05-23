@@ -17,25 +17,43 @@ export namespace ExpressionTransformer
             expression: ts.CallExpression
         ): ts.LeftHandSideExpression
     {
+        // CHECK SIGNATURE
         const signature: ts.Signature | undefined = project.checker.getResolvedSignature(expression);
         if (!signature || !signature.declaration)
             return expression;
 
-        const file: string = path.resolve(signature.declaration.getSourceFile().fileName);
-        const name: string = project.checker.getTypeAtLocation(signature.declaration).symbol.name;
-        
-        if (!LIB_PATHS.some(str => str === file) || name !== "route")
-            return expression;
-        else if (expression.arguments.length !== 0
-            && ts.isTupleTypeNode(expression.arguments[expression.arguments.length - 1]))
+        // CHECK TO BE TRANSFORMED
+        const validate: boolean = (() =>
         {
-            const tuple: ts.TupleTypeNode = expression.arguments[expression.arguments.length - 1] as any;
-            if (tuple.elements.length === 2 && ts.isArrowFunction(tuple.elements[1]))
-                return expression;
-        }
-        else if (type.isTypeParameter())
+            // CHECK GENERIC TYPE
+            if (type.isTypeParameter() === true)
+                return false;
+            
+            // CHECK FILENAME
+            const location: string = path.resolve(signature.declaration.getSourceFile().fileName);
+            if (LIB_PATHS.some(str => str === location) === false)
+                return false;
+            
+            // CHECK DUPLICATE BOOSTER
+            else if (expression.arguments.length >= 2)
+                return false;
+            else if (expression.arguments.length !== 0)
+            {
+                const last: ts.Expression = expression.arguments[expression.arguments.length - 1];
+                if (ts.isTupleTypeNode(last) 
+                    && last.elements.length === 2 
+                    && ts.isArrowFunction(last.elements[1]))
+                    return false;
+                else if (ts.isFunctionLike(last))
+                    return false;
+            }
+
+            return true;
+        })();
+        if (validate === false)
             return expression;
 
+        // GENERATE STRINGIFY PLAN
         const app: IMetadata.IApplication | null = MetadataFactory.generate
         (
             project.checker,
@@ -55,6 +73,7 @@ export namespace ExpressionTransformer
             .update(script)
             .digest("base64");
 
+        // UPDATE DECORATOR FUNCTION CALL
         return ts.factory.updateCallExpression
         (
             expression,
@@ -78,11 +97,11 @@ export namespace ExpressionTransformer
             ]
         );
     }
-}
 
-function generate_lib_paths(extension: string): string[]
-{
-    return ["EncryptedRoute", "TypedRoute"]
-        .map(name => path.resolve(path.join(__dirname, "..", `${name}.${extension}`)));
+    function generate_lib_paths(extension: string): string[]
+    {
+        return ["EncryptedRoute", "TypedRoute"]
+            .map(name => path.resolve(path.join(__dirname, "..", `${name}.${extension}`)));
+    }
+    const LIB_PATHS = [...generate_lib_paths("d.ts"), ...generate_lib_paths("ts")];
 }
-const LIB_PATHS = [...generate_lib_paths("d.ts"), ...generate_lib_paths("ts")];

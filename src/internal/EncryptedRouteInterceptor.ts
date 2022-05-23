@@ -1,18 +1,18 @@
 import express from "express";
-import * as nest from "@nestjs/common";
 import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
+import { NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common";
 import { Observable } from 'rxjs';
+import { Singleton } from "./Singleton";
 import { map, catchError } from 'rxjs/operators';
 
 import { ENCRYPTION_METADATA_KEY } from "./EncryptedConstant";
-import { Singleton } from "./Singleton";
 import { headers_to_object } from "./headers_to_object";
 import { route_error } from "./route_error";
 
 /**
  * @internal
  */
-export class EncryptedRouteInterceptor implements nest.NestInterceptor
+export class EncryptedRouteInterceptor implements NestInterceptor
 {
     public constructor
         (
@@ -22,7 +22,7 @@ export class EncryptedRouteInterceptor implements nest.NestInterceptor
     {
     }
 
-    public intercept(ctx: nest.ExecutionContext, next: nest.CallHandler): Observable<any>
+    public intercept(ctx: ExecutionContext, next: CallHandler): Observable<any>
     {
         return next.handle().pipe(
             map(value => 

@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "2.1.0-dev.20220522",
+  "version": "2.1.0-dev.20220525",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "build:test": "rimraf bin && ttsc -p test/tsconfig.json",
     "dev": "npm run build -- --watch",
     "dev:test": "npm run build:test -- --watch",
-    "test": "npm run build:test && node bin/test"
+    "test": "npm run build && npm run build:test && node bin/test"
   },
   "repository": {
     "type": "git",
