@@ -1,5 +1,6 @@
 import * as nest from "@nestjs/common";
 import { EncryptedRouteInterceptor } from "./internal/EncryptedRouteInterceptor";
+import { get_route_arguments } from "./internal/get_route_arguments";
 
 /**
  * Encrypted router decorator functions.
@@ -34,30 +35,18 @@ export namespace EncryptedRoute
     /**
      * Encrypted router decorator function for the GET method.
      * 
-     * @param path Path of the HTTP request
+     * @param paths Path(s) of the HTTP request
      * @returns Method decorator
      */
-    export function Get(path?: string): MethodDecorator
-    {
-        return nest.applyDecorators(
-            nest.Get(path),
-            nest.UseInterceptors(new EncryptedRouteInterceptor("Get"))
-        );
-    }
+    export const Get = Generator("Get");
 
     /**
-     * Encrypted router decorator function for the POST method.
+     * Encrypted router decorator function for the GET method.
      * 
-     * @param path Path of the HTTP request
+     * @param paths Path(s) of the HTTP request
      * @returns Method decorator
      */
-    export function Post(path?: string): MethodDecorator
-    {
-        return nest.applyDecorators(
-            nest.Post(path),
-            nest.UseInterceptors(new EncryptedRouteInterceptor("Post"))
-        );
-    }
+    export const Post = Generator("Post");
 
     /**
      * Encrypted router decorator function for the PATCH method.
@@ -65,13 +54,7 @@ export namespace EncryptedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Patch(path?: string): MethodDecorator
-    {
-        return nest.applyDecorators(
-            nest.Patch(path),
-            nest.UseInterceptors(new EncryptedRouteInterceptor("Patch"))
-        );
-    }
+    export const Patch = Generator("Patch");
 
     /**
      * Encrypted router decorator function for the PUT method.
@@ -79,13 +62,7 @@ export namespace EncryptedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Put(path?: string): MethodDecorator
-    {
-        return nest.applyDecorators(
-            nest.Put(path),
-            nest.UseInterceptors(new EncryptedRouteInterceptor("Put"))
-        );
-    }
+    export const Put = Generator("Put");
 
     /**
      * Encrypted router decorator function for the DELETE method.
@@ -93,11 +70,22 @@ export namespace EncryptedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Delete(path?: string): MethodDecorator
+    export const Delete = Generator("Delete");
+
+    function Generator(method: "Get"|"Post"|"Put"|"Patch"|"Delete")
     {
-        return nest.applyDecorators(
-            nest.Delete(path),
-            nest.UseInterceptors(new EncryptedRouteInterceptor("Delete"))
-        );
+        function route(path?: string | string[]): MethodDecorator;
+        function route(stringify?: (input: any) => string): MethodDecorator;
+        function route(path: string | string[], stringify: (input: any) => string): MethodDecorator;
+
+        function route(...args: any[]): MethodDecorator
+        {
+            const [path, stringify] = get_route_arguments(...args);
+            return nest.applyDecorators(
+                nest[method](path),
+                nest.UseInterceptors(new EncryptedRouteInterceptor(method, stringify))
+            );
+        }
+        return route;
     }
 }

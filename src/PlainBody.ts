@@ -1,6 +1,6 @@
+import { createParamDecorator, ExecutionContext, BadRequestException } from "@nestjs/common";
 import express from "express";
 import raw from 'raw-body';
-import * as nest from '@nestjs/common';
 
 /**
  * Plain body decorator.
@@ -23,13 +23,13 @@ import * as nest from '@nestjs/common';
  * @return Parameter decorator
  * @author Jeongho Nam - https://github.com/samchon
  */
-export const PlainBody: (() => ParameterDecorator) = nest.createParamDecorator
+export const PlainBody: (() => ParameterDecorator) = createParamDecorator
 (
-    async function PlainBody(_data: any, context: nest.ExecutionContext)
+    async function PlainBody(_data: any, context: ExecutionContext)
     {
         const requeest: express.Request = context.switchToHttp().getRequest();
         if (!requeest.readable)
-            throw new nest.BadRequestException("Invalid body");
+            throw new BadRequestException("Invalid body");
 
         const body: string = (await raw(requeest)).toString("utf8").trim();
         return body;

@@ -1,9 +1,9 @@
 .git/
 .github/
+bin/
 node_modules/
 src/
-
-lib/test/
+test/
 
 *.*ignore
 *.js.map

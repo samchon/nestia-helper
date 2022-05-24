@@ -1,5 +1,5 @@
-import * as nest from "@nestjs/common";
-import * as express from 'express';
+import { Request } from "express";
+import { createParamDecorator, ExecutionContext, BadRequestException } from "@nestjs/common";
 
 /**
  * URL parameter decorator with type.
@@ -32,11 +32,11 @@ export function TypedParam
         nullable: boolean = false
     )
 {
-    return nest.createParamDecorator
+    return createParamDecorator
     (
-        function TypedParam({}: any, ctx: nest.ExecutionContext)
+        function TypedParam({}: any, ctx: ExecutionContext)
         {
-            const request: express.Request = ctx.switchToHttp().getRequest();
+            const request: Request = ctx.switchToHttp().getRequest();
             const str: string = request.params[name];
             
             if (nullable === true && str === "null")
@@ -48,19 +48,19 @@ export function TypedParam
                 else if (str === "false" || str === "0")
                     return false;
                 else
-                    throw new nest.BadRequestException(`Value of the URL parameter '${name}' is not a boolean.`);
+                    throw new BadRequestException(`Value of the URL parameter '${name}' is not a boolean.`);
             }
             else if (type === "number")
             {
                 const value: number = Number(str);
                 if (isNaN(value))
-                    throw new nest.BadRequestException(`Value of the URL parameter "${name}" is not a number.`);
+                    throw new BadRequestException(`Value of the URL parameter "${name}" is not a number.`);
                 return value;
             }
             else if (type === "uuid")
             {
                 if (UUID_PATTERN.test(str) === false)
-                    throw new nest.BadRequestException(`Value of the URL parameter "${name}" is not a valid UUID.`);
+                    throw new BadRequestException(`Value of the URL parameter "${name}" is not a valid UUID.`);
                 return str;
             }
             else

@@ -1,5 +1,6 @@
 import * as nest from "@nestjs/common";
 import { TypedRouteInterceptor } from "./internal/TypedRouteInterceptor";
+import { get_route_arguments } from "./internal/get_route_arguments";
 
 /**
  * Router decorator functions.
@@ -25,13 +26,7 @@ export namespace TypedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Get(path?: string): MethodDecorator
-    {
-        return nest.applyDecorators(
-            nest.Get(path),
-            nest.UseInterceptors(new TypedRouteInterceptor())
-        );
-    }
+    export const Get = Generator("Get");
 
     /**
      * Router decorator function for the POST method.
@@ -39,13 +34,7 @@ export namespace TypedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Post(path?: string)
-    {
-        return nest.applyDecorators(
-            nest.Post(path),
-            nest.UseInterceptors(new TypedRouteInterceptor())
-        );
-    }
+    export const Post = Generator("Post");
 
     /**
      * Router decorator function for the PATH method.
@@ -53,13 +42,7 @@ export namespace TypedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Patch(path?: string)
-    {
-        return nest.applyDecorators(
-            nest.Patch(path),
-            nest.UseInterceptors(new TypedRouteInterceptor())
-        );
-    }
+    export const Patch = Generator("Patch");
 
     /**
      * Router decorator function for the PUT method.
@@ -67,13 +50,7 @@ export namespace TypedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Put(path?: string)
-    {
-        return nest.applyDecorators(
-            nest.Put(path),
-            nest.UseInterceptors(new TypedRouteInterceptor())
-        );
-    }
+    export const Put = Generator("Put");
 
     /**
      * Router decorator function for the DELETE method.
@@ -81,11 +58,22 @@ export namespace TypedRoute
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
-    export function Delete(path?: string)
+    export const Delete = Generator("Delete");
+
+    function Generator(method: "Get"|"Post"|"Put"|"Patch"|"Delete")
     {
-        return nest.applyDecorators(
-            nest.Delete(path),
-            nest.UseInterceptors(new TypedRouteInterceptor())
-        );
+        function route(path?: string | string[]): MethodDecorator;
+        function route(stringify?: (input: any) => string): MethodDecorator;
+        function route(path: string | string[], stringify?: (input: any) => string): MethodDecorator;
+
+        function route(...args: any[]): MethodDecorator
+        {
+            const [path, stringify] = get_route_arguments(...args);
+            return nest.applyDecorators(
+                nest[method](path),
+                nest.UseInterceptors(new TypedRouteInterceptor(stringify))
+            );
+        }
+        return route;
     }
 }

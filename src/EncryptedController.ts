@@ -1,4 +1,4 @@
-import * as nest from "@nestjs/common";
+import { Controller } from "@nestjs/common";
 import { IEncryptionPassword } from "nestia-fetcher";
 
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
@@ -41,6 +41,6 @@ export function EncryptedController
     return function (target: any)
     {
         Reflect.defineMetadata(ENCRYPTION_METADATA_KEY, password, target);
-        nest.Controller(path)(target);
+        Controller(path)(target);
     };
 }
