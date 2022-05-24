@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -51,6 +51,6 @@
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",
     "typescript-is": "x.x.x",
-    "typescript-json": "^2.1.1"
+    "typescript-json": "^2.1.2"
   }
 }

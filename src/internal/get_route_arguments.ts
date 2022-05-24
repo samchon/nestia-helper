@@ -1,4 +1,4 @@
-import { JsonMemory } from "typescript-json/lib/storages/JsonMemory";
+import { StringifyFactory } from "typescript-json/lib/factories/StringifyFactory";
 
 export function get_route_arguments
     (
@@ -23,11 +23,8 @@ export function get_route_arguments
         path, 
         tuple !== undefined
             ? typeof tuple === "function" ? tuple
-            : tuple instanceof Array
-                    && tuple.length === 2
-                    && typeof tuple[0] === "string"
-                    && typeof tuple[1] === "function"
-                ? JsonMemory.stringify(tuple[0], tuple[1])
+            : typeof tuple === "object"
+                ? StringifyFactory.generate(tuple)
                 : JSON.stringify
             : JSON.stringify
     ];

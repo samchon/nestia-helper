@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import path from "path";
 import ts from "typescript";
 
@@ -62,17 +61,6 @@ export namespace ExpressionTransformer
         const app = SchemaFactory.application(metadata, SchemaFactory.JSON_PREFIX);
         const literal = ExpressionFactory.generate(app);
 
-        const script: string = project.printer.printNode
-        (
-            ts.EmitHint.Unspecified, 
-            literal,
-            expression.getSourceFile()
-        );
-        const key: string = crypto
-            .createHash("sha256")
-            .update(script)
-            .digest("base64");
-
         // UPDATE DECORATOR FUNCTION CALL
         return ts.factory.updateCallExpression
         (
@@ -81,19 +69,7 @@ export namespace ExpressionTransformer
             expression.typeArguments,
             [
                 ...expression.arguments,
-                ts.factory.createArrayLiteralExpression
-                ([
-                    ts.factory.createStringLiteral(key),
-                    ts.factory.createArrowFunction
-                    (
-                        undefined,
-                        undefined,
-                        [],
-                        undefined,
-                        undefined,
-                        literal
-                    )
-                ])
+                literal
             ]
         );
     }
