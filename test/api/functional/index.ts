@@ -5,4 +5,5 @@
  */
 //================================================================
 export * as consumers from "./consumers";
+export * as filesystem from "./filesystem";
 export * as system from "./system";

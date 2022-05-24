@@ -3,12 +3,14 @@ import helper from "../src";
 import { NestFactory } from "@nestjs/core";
 import { IEncryptionPassword } from "nestia-fetcher";
 
+import { FilesystemController } from "./controllers/FilesystemController";
 import { ConsumerSaleArticleCommentsController } from "./controllers/ConsumerSaleArticleCommentsController";
 import { ConsumerSaleReviewsController } from "./controllers/ConsumerSaleReviewsController";
 import { ConsumerSaleQuestionsController } from "./controllers/ConsumerSaleQuestionsController";
 import { SystemController } from "./controllers/SystemController";
 
 import { test_comment } from "./features/test_comments";
+import { test_filesystem } from "./features/test_filesystem";
 import { test_question } from "./features/test_questions";
 import { test_review } from "./features/test_reviews";
 import { test_system } from "./features/test_system";
@@ -22,10 +24,11 @@ const ENCRYPTION_PASSWORD: IEncryptionPassword = {
 (
     {
         controllers: [ 
+            FilesystemController,
             SystemController, 
             ConsumerSaleArticleCommentsController, 
             ConsumerSaleQuestionsController, 
-            ConsumerSaleReviewsController 
+            ConsumerSaleReviewsController,
         ]
     }, 
     ENCRYPTION_PASSWORD
@@ -56,6 +59,7 @@ async function main(): Promise<void>
         encryption: ENCRYPTION_PASSWORD
     };
     await feature(connection, test_comment);
+    await feature(connection, test_filesystem);
     await feature(connection, test_question);
     await feature(connection, test_review);
     await feature(connection, test_system);

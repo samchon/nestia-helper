@@ -1,27 +1,147 @@
 # Nestia Helper
-```bash
-npm install --save nestia-helper
-```
+Boost up `JSON.stringify()` function, of the API responses, 2x times faster.
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/samchon/nestia-helper/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
 [![Downloads](https://img.shields.io/npm/dm/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
 [![Build Status](https://github.com/samchon/nestia-helper/workflows/build/badge.svg)](https://github.com/samchon/nestia-helper/actions?query=workflow%3Abuild)
 
-Helper library of the `NestJS` with [nestia](https://github.com/samchon/nestia).
+`nestia-helper` is a helper library of `NestJS`, which can boost up the `JSON.stringify()` function 2x times faster about the API responses. Just by installing and utilizing this `nestia-helper`, your NestJS developed backend server will convert JSON string 2x times faster.
 
-`nestia-helper` is a type of helper library for `Nestia` by enhancing decorator functions. Also, all of the decorator functions provided by this `nestia-helper` are all fully compatible with the [nestia](https://github.com/samchon/nestia), who can generate SDK library by analyzing NestJS controller classes in the compilation level.
+```typescript
+import helper from "nestia-helper";
+import * as nest from "@nestjs/common";
 
-Of course, this `nestia-helper` is not essential for utilizing the `NestJS` and [nestia](https://github.com/samchon/nestia). You can generate SDK library of your NestJS developed backend server without this `nestia-helper`. However, as decorator functions of this `nestia-helper` is enough strong, I recommend you to adapt this `nestia-helper` when using `NestJS` and [nestia](https://github.com/samchon/nestia).
+@nest.Controller("bbs/articles")
+export class BbsArticlesController
+{
+    // JSON.stringify for IPage<IBbsArticle.ISummary> would be 2 times faster 
+    @helper.TypedRoute.Get()
+    public get(): Promise<IPage<IBbsArticle.ISummary>>;
+}
+```
+
+
+
+
+## Setup
+### NPM Package
+```bash
+npm install --save nestia-helper
+
+npm install --save-dev typescript
+npm install --save-dev ttypescript
+npm install --save-dev ts-node
+```
+
+### tsconfig.json
+After the installation, you should configure the `tsconfig.json` file like below. Add the new property transform and its value `nestia-helper/lib/transform` into the `compilerOptions.plugins` array.
+
+From now on, your NestJS backend server can convert response data to JSON-string 2x times faster, if you're utilizing [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute). Furthermore, surplus response data that're not written in the response type would be automatically erased.
+
+```json
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "transform": "nestia-helper/lib/transform"
+      }
+    ]
+  }
+}
+```
 
 
 
 
 ## Features
+### TypedRoute
+Router decorator functions.
+
+`TypedRoute` is an utility class containing router decorator functions.
+
+Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get` or `nest.Post`, router decorator functions in the `TypedRoute` supports [ExceptionManager](#exceptionmanager), who can convert custom error classes to the regular `nest.HttpException class`.
+
+> If you've configured the [tsconfig.json](#tsconfigjson), `JSON.stringify()` function for the response data would be 2x times faster. Of course, surplus data that are not written in the response type would be automatically erased.
+>
+>```json
+> {
+>   "compilerOptions": {
+>     "plugins": [
+>       {
+>         "transform": "nestia-helper/lib/transform"
+>       }
+>     ]
+>   }
+> }
+> ```
+
+Therefore, with the `TypedRoute` and [ExceptionManager](#exceptionmanager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
+
+```typescript
+import helper from "nestia-helper";
+import * as nest from "@nestjs/common";
+import * as orm from "typeorm";
+
+@nest.Controller("shopping/sales")
+export class ShoppingSalesController
+{
+    @helper.TypedRoute.Get(":id")
+    public async at
+        (
+            @helper.TypedParam("id", "string") id: string,
+        ): Promise<IShoppingSale>
+    {
+        // when `orm.EntityNotFound` occurs, 
+        // it would be replaced to the `404` error
+        const sale: ShoppingSale = await ShoppingSale.findOneOrFail(id);
+        return await ShoppingSaleProvider.json(sale);
+    }
+}
+
+helper.ExceptionManager.insert(orm.EntityNotFoundError, exp => 
+{
+    return new nest.NotFoundException(exp.message);
+});
+```
+
+### TypedParam
+URL parameter decorator with type.
+
+`TypedParam` is a decorator function getting specific typed parameter from the HTTP request URL. It's almost same with the `nest.Param`, but `TypedParam` can specify the parameter type manually. Beside, the `nest.Param` always parses all of the parameters as string type.
+
+```typescript
+@nest.Controller("shopping/sales")
+export class ShoppingSalesController
+{
+    @helper.TypedRoute.Get(":section/:id/:paused")
+    public async pause
+        (
+            @helper.TypedParam("section", "string") section: string,
+            @helper.TypedParam("id", "number") id: number,
+            @helper.TypedParam("paused", "boolean") paused: boolean
+        ): Promise<void>;
+}
+```
+
 ### EncryptedRoute
 Encrypted router decorator functions.
 
-`EncryptedRoute` is an utility class containing encrypted router decorator functions. Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get()` or `nest.Post()`, router decorator functions in the `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they support the [ExceptionManager](#exception-manager) who can convert custom error classes to the regular `nest.HttpException` class.
+`EncryptedRoute` is an utility class containing encrypted router decorator functions. Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get()` or `nest.Post()`, router decorator functions in the `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they support the [ExceptionManager](#exception-manager) who can convert custom error classes to the regular `nest.HttpException` class. 
+
+> If you've configured the [tsconfig.json](#tsconfigjson), `JSON.stringify()` function for the response data would be 2x times faster. Also, surplus data that are not written in the response type would be automatically erased. However, the boosting would be offset by the encryption logic, maybe.
+>
+>```json
+> {
+>   "compilerOptions": {
+>     "plugins": [
+>       {
+>         "transform": "nestia-helper/lib/transform"
+>       }
+>     ]
+>   }
+> }
+> ```
 
 Therefore, with the `EncryptedRoute` and [ExceptionManager](#exception-manager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
 
@@ -158,61 +278,6 @@ helper.ExceptionManager.insert(orm.QueryFailedError, exp =>
 });
 ```
 
-### TypedRoute
-Router decorator functions.
-
-`TypedRoute` is an utility class containing router decorator functions.
-
-Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get` or `nest.Post`, router decorator functions in the `TypedRoute` supports [ExceptionManager](#exceptionmanager), who can convert custom error classes to the regular `nest.HttpException class`.
-
-Therefore, with the `TypedRoute` and [ExceptionManager](#exceptionmanager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
-
-```typescript
-import helper from "nestia-helper";
-import * as nest from "@nestjs/common";
-import * as orm from "typeorm";
-
-@nest.Controller("shopping/sales")
-export class ShoppingSalesController
-{
-    @helper.TypedRoute.Get(":id")
-    public async at
-        (
-            @helper.TypedParam("id", "string") id: string,
-        ): Promise<IShoppingSale>
-    {
-        // when `orm.EntityNotFound` occurs, 
-        // it would be replaced to the `404` error
-        const sale: ShoppingSale = await ShoppingSale.findOneOrFail(id);
-        return await ShoppingSaleProvider.json(sale);
-    }
-}
-
-helper.ExceptionManager.insert(orm.EntityNotFoundError, exp => 
-{
-    return new nest.NotFoundException(exp.message);
-});
-```
-
-### TypedParam
-URL parameter decorator with type.
-
-`TypedParam` is a decorator function getting specific typed parameter from the HTTP request URL. It's almost same with the `nest.Param`, but `TypedParam` can specify the parameter type manually. Beside, the `nest.Param` always parses all of the parameters as string type.
-
-```typescript
-@nest.Controller("shopping/sales")
-export class ShoppingSalesController
-{
-    @helper.TypedRoute.Get(":section/:id/:paused")
-    public async pause
-        (
-            @helper.TypedParam("section", "string") section: string,
-            @helper.TypedParam("id", "number") id: number,
-            @helper.TypedParam("paused", "boolean") paused: boolean
-        ): Promise<void>;
-}
-```
-
 ### PlainBody
 Plain body decorator.
 
@@ -248,56 +313,79 @@ Therefore, if you're planning to compose your own backend project using this `ne
 ### Nestia
 https://github.com/samchon/nestia
 
-As I've mentioned, this `nestia-helper` is a type of helper library for the `NestJS` and [nestia](https://github.com/samchon/nestia). With the [nestia](https://github.com/samchon/nestia), you don't need to write any swagger comment. Just deliver the SDK library who've built by the [nestia](https://github.com/samchon/nestia).
+Automatic `SDK` and `Swagger` generator for the `NestJS`, evolved than ever.
 
-When you're developing a backend server using the `NestJS`, you don't need any extra dedication, for delivering the Rest API to the client developers, like writing the `swagger` comments. You just run this [nestia](https://github.com/samchon/nestia) up, then [nestia](https://github.com/samchon/nestia) would generate the SDK automatically, by analyzing your controller classes in the compliation and runtime level.
+`nestia` is an evolved `SDK` and `Swagger` generator, which analyzes your `NestJS` server code in the compilation level. With `nestia` and compilation level analyzer, you don't need to write any swagger or class-validator decorators.
 
-With the automatically generated SDK through this [nestia](https://github.com/samchon/nestia), client developer also does not need any extra work, like reading `swagger` and writing the duplicated interaction code. Client developer only needs to import the SDK and calls matched function with the await symbol.
+Reading below table and example code, feel how the "compilation level" makes `nestia` stronger.
+
+Components | `nestia`::SDK | `nestia`::swagger | `@nestjs/swagger`
+-----------|---|---|---
+Pure DTO interface | ✔ | ✔ | ❌
+Description comments | ✔ | ✔ | ❌
+Simple structure | ✔ | ✔ | ✔
+Generic type | ✔ | ✔ | ❌
+Union type | ✔ | ✔ | ▲
+Intersection type | ✔ | ✔ | ▲
+Conditional type | ✔ | ▲ | ❌
+Auto completion | ✔ | ❌ | ❌
+Type hints | ✔ | ❌ | ❌
+2x faster `JSON.stringify()` | ✔ | ❌ | ❌
+Ensure type safety | ✅ | ❌ | ❌
 
 ```typescript
-import api from "@samchon/bbs-api";
-import { IBbsArticle } from "@samchon/bbs-api/lib/structures/bbs/IBbsArticle";
-import { IPage } from "@samchon/bbs-api/lib/structures/common/IPage";
+// IMPORT SDK LIBRARY GENERATED BY NESTIA
+import api from "@samchon/shopping-api";
+import { IPage } from "@samchon/shopping-api/lib/structures/IPage";
+import { ISale } from "@samchon/shopping-api/lib/structures/ISale";
+import { ISaleArticleComment } from "@samchon/shopping-api/lib/structures/ISaleArticleComment";
+import { ISaleQuestion } from "@samchon/shopping-api/lib/structures/ISaleQuestion";
 
-export async function test_article_read(connection: api.IConnection): Promise<void>
+export async function trace_sale_question_and_comment
+    (connection: api.IConnection): Promise<void>
 {
-    // LIST UP ARTICLE SUMMARIES
-    const index: IPage<IBbsArticle.ISummary> = await api.functional.bbs.articles.index
+    // LIST UP SALE SUMMARIES
+    const index: IPage<ISale.ISummary> = await api.functional.shoppings.sales.index
     (
         connection,
-        "free",
+        "general",
         { limit: 100, page: 1 }
     );
 
-    // READ AN ARTICLE DETAILY
-    const article: IBbsArticle = await api.functional.bbs.articles.at
+    // PICK A SALE
+    const sale: ISale = await api.functional.shoppings.sales.at
     (
-        connection,
-        "free",
+        connection, 
         index.data[0].id
     );
-    console.log(article.title, aritlce.body, article.files);
+    console.log("sale", sale);
+
+    // WRITE A QUESTION
+    const question: ISaleQuestion = await api.functional.shoppings.sales.questions.store
+    (
+        connection,
+        "general",
+        sale.id,
+        {
+            title: "How to use this product?",
+            body: "The description is not fully enough. Can you introduce me more?",
+            files: []
+        }
+    );
+    console.log("question", question);
+
+    // WRITE A COMMENT
+    const comment: ISaleArticleComment = await api.functional.shoppings.sales.comments.store
+    (
+        connection,
+        "general",
+        sale.id,
+        question.id,
+        {
+            body: "p.s) Can you send me a detailed catalogue?",
+            anonymous: false
+        }
+    );
+    console.log("comment", comment);
 }
 ```
-
-### Safe-TypeORM
-https://github.com/samchon/safe-typeorm
-
-[safe-typeorm](https://github.com/samchon/safe-typeorm) is another library that what I've developed, helping `TypeORM` in the compilation level and optimizes DB performance automatically without any extra dedication.
-
-Therefore, this [nestia](https://github.com/samchon/nestia) makes you to be much convenient in the API interaction level and safe-typeorm helps you to be much convenient in the DB interaction level. With those [nestia](https://github.com/samchon/nestia) and [safe-typeorm](https://github.com/samchon/safe-typeorm), let's implement the backend server much easily and conveniently.
-
-  - When writing [**SQL query**](https://github.com/samchon/safe-typeorm#safe-query-builder),
-    - Errors would be detected in the **compilation** level
-    - **Auto Completion** would be provided
-    - **Type Hint** would be supported
-  - You can implement [**App-join**](https://github.com/samchon/safe-typeorm#app-join-builder) very conveniently
-  - When [**SELECT**ing for **JSON** conversion](https://github.com/samchon/safe-typeorm#json-select-builder)
-    - [**App-Join**](https://github.com/samchon/safe-typeorm#app-join-builder) with the related entities would be automatically done
-    - Exact JSON **type** would be automatically **deduced**
-    - The **performance** would be **automatically tuned**
-  - When [**INSERT**](https://github.com/samchon/safe-typeorm#insert-collection)ing records
-    - Sequence of tables would be automatically sorted by analyzing dependencies
-    - The **performance** would be **automatically tuned**
-
-![Safe-TypeORM Demo](https://raw.githubusercontent.com/samchon/safe-typeorm/master/assets/demonstrations/safe-query-builder.gif)

@@ -69,6 +69,10 @@
     /* Advanced Options */
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
+    "plugins": [
+      { "transform": "typescript-is/lib/transform-inline/transformer" },
+      { "transform": "typescript-json/lib/transform" }
+    ]
   },
   "include": ["src"]
 }

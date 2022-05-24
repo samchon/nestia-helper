@@ -54,13 +54,13 @@ export namespace ExpressionTransformer
             return expression;
 
         // GENERATE STRINGIFY PLAN
-        const app: IMetadata.IApplication | null = MetadataFactory.generate
+        const metadata: IMetadata.IApplication | null = MetadataFactory.generate
         (
             project.checker,
             type
         );
-        const tuple = SchemaFactory.application(app);
-        const literal = ExpressionFactory.generate(tuple);
+        const app = SchemaFactory.application(metadata, SchemaFactory.JSON_PREFIX);
+        const literal = ExpressionFactory.generate(app);
 
         const script: string = project.printer.printNode
         (
