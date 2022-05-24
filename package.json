@@ -51,6 +51,6 @@
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",
     "typescript-is": "x.x.x",
-    "typescript-json": "^2.1.2"
+    "typescript-json": "^2.1.3"
   }
 }
