@@ -4,25 +4,24 @@ import { get_route_arguments } from "./internal/get_route_arguments";
 
 /**
  * Router decorator functions.
- * 
+ *
  * `TypedRoute` is an utility class containing router decorator functions.
- * 
- * Unlike the basic router decorator functions provided from the NestJS like 
+ *
+ * Unlike the basic router decorator functions provided from the NestJS like
  * {@link nest.Get} or {@link nest.Post}, router decorator functions in the `TypedRoute`
  * supports {@link ExceptionManager}, who can convert custom error classes to the regular
- * {@link nest.HttpException} class. 
- * 
- * Therefore, with the `TypedRoute` and {@link ExceptionManger}, you can manage your 
+ * {@link nest.HttpException} class.
+ *
+ * Therefore, with the `TypedRoute` and {@link ExceptionManger}, you can manage your
  * custom error classes much systematically. You can avoid 500 internal server error or
  * hard coding implementations about the custom error classes.
- * 
+ *
  * @author Jeongho Nam - https://github.com/samchon
  */
-export namespace TypedRoute
-{
+export namespace TypedRoute {
     /**
      * Router decorator function for the GET method.
-     * 
+     *
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
@@ -30,7 +29,7 @@ export namespace TypedRoute
 
     /**
      * Router decorator function for the POST method.
-     * 
+     *
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
@@ -38,7 +37,7 @@ export namespace TypedRoute
 
     /**
      * Router decorator function for the PATH method.
-     * 
+     *
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
@@ -46,7 +45,7 @@ export namespace TypedRoute
 
     /**
      * Router decorator function for the PUT method.
-     * 
+     *
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
@@ -54,24 +53,25 @@ export namespace TypedRoute
 
     /**
      * Router decorator function for the DELETE method.
-     * 
+     *
      * @param path Path of the HTTP request
      * @returns Method decorator
      */
     export const Delete = Generator("Delete");
 
-    function Generator(method: "Get"|"Post"|"Put"|"Patch"|"Delete")
-    {
+    function Generator(method: "Get" | "Post" | "Put" | "Patch" | "Delete") {
         function route(path?: string | string[]): MethodDecorator;
         function route(stringify?: (input: any) => string): MethodDecorator;
-        function route(path: string | string[], stringify?: (input: any) => string): MethodDecorator;
+        function route(
+            path: string | string[],
+            stringify?: (input: any) => string,
+        ): MethodDecorator;
 
-        function route(...args: any[]): MethodDecorator
-        {
+        function route(...args: any[]): MethodDecorator {
             const [path, stringify] = get_route_arguments(...args);
             return nest.applyDecorators(
                 nest[method](path),
-                nest.UseInterceptors(new TypedRouteInterceptor(stringify))
+                nest.UseInterceptors(new TypedRouteInterceptor(stringify)),
             );
         }
         return route;

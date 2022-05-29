@@ -17,38 +17,32 @@ import { test_system } from "./features/test_system";
 
 const ENCRYPTION_PASSWORD: IEncryptionPassword = {
     key: "abcd".repeat(8),
-    iv: "abcd".repeat(4)
-}
+    iv: "abcd".repeat(4),
+};
 
-@helper.EncryptedModule
-(
+@helper.EncryptedModule(
     {
-        controllers: [ 
+        controllers: [
             FilesystemController,
-            SystemController, 
-            ConsumerSaleArticleCommentsController, 
-            ConsumerSaleQuestionsController, 
+            SystemController,
+            ConsumerSaleArticleCommentsController,
+            ConsumerSaleQuestionsController,
             ConsumerSaleReviewsController,
-        ]
-    }, 
-    ENCRYPTION_PASSWORD
+        ],
+    },
+    ENCRYPTION_PASSWORD,
 )
-class TestModule
-{
-}
+class TestModule {}
 
-async function feature
-    (
-        connection: api.IConnection,
-        func: (connection: api.IConnection) => Promise<void>
-    ): Promise<void>
-{
+async function feature(
+    connection: api.IConnection,
+    func: (connection: api.IConnection) => Promise<void>,
+): Promise<void> {
     console.log(func.name);
     await func(connection);
 }
 
-async function main(): Promise<void>
-{
+async function main(): Promise<void> {
     // OPEN SERVER
     const app = await NestFactory.create(TestModule);
     await app.listen(36999);
@@ -56,7 +50,7 @@ async function main(): Promise<void>
     // DO TEST
     const connection: api.IConnection = {
         host: "http://127.0.0.1:36999",
-        encryption: ENCRYPTION_PASSWORD
+        encryption: ENCRYPTION_PASSWORD,
     };
     await feature(connection, test_comment);
     await feature(connection, test_filesystem);
@@ -67,8 +61,7 @@ async function main(): Promise<void>
     // CLOSE
     await app.close();
 }
-main().catch(exp =>
-{
+main().catch((exp) => {
     console.log(exp);
     process.exit(-1);
 });

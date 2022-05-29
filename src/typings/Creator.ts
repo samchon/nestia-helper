@@ -1,4 +1,3 @@
-export type Creator<T extends Object> = 
-{
-    new(...args: any[]): T;
+export type Creator<T extends object> = {
+    new (...args: any[]): T;
 };
