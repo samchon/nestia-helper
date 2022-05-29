@@ -5,16 +5,13 @@ import { SaleInquiriesController } from "./SaleInquiriesController";
 import { ISaleReview } from "../api/structures/ISaleReview";
 
 @nest.Controller("consumers/:section/sales/:saleId/reviews")
-export class ConsumerSaleReviewsController
-    extends SaleInquiriesController<
-        ISaleReview.IContent, 
-        ISaleReview.IStore, 
-        ISaleReview>(TSON.createStringifier<ISaleReview>())
-{
-    public constructor()
-    {
-        super(input =>
-        ({
+export class ConsumerSaleReviewsController extends SaleInquiriesController<
+    ISaleReview.IContent,
+    ISaleReview.IStore,
+    ISaleReview
+>(TSON.createStringifier<ISaleReview>()) {
+    public constructor() {
+        super((input) => ({
             id: 0,
             writer: "someone",
             contents: [
@@ -24,12 +21,12 @@ export class ConsumerSaleReviewsController
                     body: input.body,
                     score: input.score,
                     files: input.files,
-                    created_at: new Date().toString()
-                }
+                    created_at: new Date().toString(),
+                },
             ],
             answer: null,
             hit: 0,
-            created_at: new Date().toString()
-        }))
+            created_at: new Date().toString(),
+        }));
     }
 }

@@ -9,6 +9,9 @@
     "build:test": "rimraf bin && ttsc -p test/tsconfig.json",
     "dev": "npm run build -- --watch",
     "dev:test": "npm run build:test -- --watch",
+    "eslint": "eslint ./**/*.ts",
+    "eslint:fix": "eslint ./**/*.ts --fix",
+    "prettier": "prettier ./**/*.ts --write",
     "test": "npm run build && npm run build:test && node bin/test"
   },
   "repository": {
@@ -32,8 +35,11 @@
   "homepage": "https://github.com/samchon/nestia-helper#readme",
   "devDependencies": {
     "@types/nested-error-stacks": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "@typescript-eslint/parser": "^5.26.0",
     "git-last-commit": "^1.0.1",
     "nestia": "^2.1.5",
+    "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "suppress-warnings": "^1.0.2",
     "ts-node": "^10.4.0",

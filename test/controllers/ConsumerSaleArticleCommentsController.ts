@@ -4,34 +4,33 @@ import helper from "../../src/index";
 
 import { ISaleArticleComment } from "../api/structures/ISaleArticleComment";
 
-@nest.Controller("consumers/:section/sales/:saleId/articles/:articleId/comments")
-export class ConsumerSaleArticleCommentsController
-{
+@nest.Controller(
+    "consumers/:section/sales/:saleId/articles/:articleId/comments",
+)
+export class ConsumerSaleArticleCommentsController {
     /**
      * Store a new comment.
-     * 
+     *
      * @param request Instance of the Express.Request
      * @param section Code of the target section
      * @param saleId ID of the target sale
      * @param articleId ID of the target article
      * @param input Content to write
      * @return Newly archived comment
-     * 
+     *
      * @throw 400 bad request error when type of the input data is not valid
      * @throw 401 unauthorized error when you've not logged in yet
      * @throw 403 forbidden error when you're a seller and the sale is not yours
      * @throw 404 not found error when unable to find the matched record
      */
     @helper.TypedRoute.Post()
-    public async store
-        (
-            @nest.Request() request: express.Request,
-            @helper.TypedParam("section", "string") section: string, 
-            @helper.TypedParam("saleId", "number") saleId: number, 
-            @helper.TypedParam("articleId", "number") articleId: number,
-            @nest.Body() input: ISaleArticleComment.IStore
-        ): Promise<ISaleArticleComment>
-    {
+    public async store(
+        @nest.Request() request: express.Request,
+        @helper.TypedParam("section", "string") section: string,
+        @helper.TypedParam("saleId", "number") saleId: number,
+        @helper.TypedParam("articleId", "number") articleId: number,
+        @nest.Body() input: ISaleArticleComment.IStore,
+    ): Promise<ISaleArticleComment> {
         request;
         section;
         saleId;
@@ -41,17 +40,15 @@ export class ConsumerSaleArticleCommentsController
             id: 0,
             parent_id: null,
             writer_type: "consumer",
-            writer_name: input.annonymous
-                ? null
-                : "someone",
+            writer_name: input.annonymous ? null : "someone",
             contents: [
                 {
                     id: "some-id",
                     body: input.body,
-                    created_at: new Date().toString()
-                }
+                    created_at: new Date().toString(),
+                },
             ],
-            created_at: new Date().toString()
+            created_at: new Date().toString(),
         };
     }
 }
