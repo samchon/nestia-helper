@@ -53,6 +53,7 @@ export namespace ExpressionTransformer {
         const app = SchemaFactory.application(
             metadata,
             SchemaFactory.JSON_PREFIX,
+            true
         );
         const literal = ExpressionFactory.generate(app);
 
