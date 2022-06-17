@@ -1,6 +1,6 @@
 import { HttpError } from "nestia-fetcher";
 import { HttpException } from "@nestjs/common";
-import { TypeGuardError } from "typescript-is";
+import { TypeGuardError } from "typescript-json";
 
 import { Creator } from "./typings/Creator";
 
@@ -23,7 +23,7 @@ import { Creator } from "./typings/Creator";
  *
  * Below error classes are defaultly configured in this `ExceptionManager`
  *
- *   - `typescript-is.TypeGuardError`
+ *   - `typescript-json.TypeGuardError`
  *   - `nestia-fetcher.HttpError`
  *
  * @author Jeongho Nam - https://github.com/samchon
@@ -93,7 +93,7 @@ ExceptionManager.insert(
         new HttpException(
             {
                 path: error.path,
-                reason: error.reason,
+                reason: error.message,
                 message: "Request message is not following the promised type.",
             },
             400,

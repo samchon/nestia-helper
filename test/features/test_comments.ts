@@ -1,4 +1,4 @@
-import { assertType } from "typescript-is";
+import TSON from "typescript-json";
 
 import api from "../api";
 import { ISaleArticleComment } from "../api/structures/ISaleArticleComment";
@@ -15,5 +15,5 @@ export async function test_comment(connection: api.IConnection): Promise<void> {
                 annonymous: false,
             },
         );
-    assertType<typeof comment>(comment);
+    TSON.assert<typeof comment>(comment);
 }

@@ -1,18 +1,19 @@
 import path from "path";
 import ts from "typescript";
-
 import { IProject } from "typescript-json/lib/structures/IProject";
-import { IMetadata } from "typescript-json/lib/structures/IMetadata";
-import { ExpressionFactory } from "typescript-json/lib/factories/ExpressionFactory";
-import { MetadataFactory } from "typescript-json/lib/factories/MetadataFactory";
-import { SchemaFactory } from "typescript-json/lib/factories/SchemaFactory";
+import { IModuleImport } from "typescript-json/lib/structures/IModuleImport";
+import { StringifyFactory } from "typescript-json/lib/factories/features/StringifyFactory";
 
 export namespace ExpressionTransformer {
     export function transform(
         project: IProject,
         type: ts.Type,
         expression: ts.CallExpression,
+        modulo: IModuleImport,
     ): ts.LeftHandSideExpression {
+        //----
+        // VALIDATIONS
+        //----
         // CHECK SIGNATURE
         const signature: ts.Signature | undefined =
             project.checker.getResolvedSignature(expression);
@@ -47,22 +48,29 @@ export namespace ExpressionTransformer {
         })();
         if (validate === false) return expression;
 
+        // GET TYPE NODE
+        const typeNode: ts.TypeNode | undefined =
+            project.checker.typeToTypeNode(type, undefined, undefined);
+        if (typeNode === undefined) return expression;
+
+        //----
+        // TRANSFORMATION
+        //----
+        // PASS
+        modulo.used ||= true;
+
         // GENERATE STRINGIFY PLAN
-        const metadata: IMetadata.IApplication | null =
-            MetadataFactory.generate(project.checker, type);
-        const app = SchemaFactory.application(
-            metadata,
-            SchemaFactory.JSON_PREFIX,
-            true
-        );
-        const literal = ExpressionFactory.generate(app);
+        const arrow: ts.ArrowFunction = StringifyFactory.generate({
+            ...modulo,
+            from: "lib",
+        })(project, type);
 
         // UPDATE DECORATOR FUNCTION CALL
         return ts.factory.updateCallExpression(
             expression,
             expression.expression,
             expression.typeArguments,
-            [...expression.arguments, literal],
+            [...expression.arguments, arrow],
         );
     }
 

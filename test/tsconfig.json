@@ -102,7 +102,6 @@
     "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
     "plugins": [
       { "transform": "../src/transform.ts" },
-      { "transform": "typescript-is/lib/transform-inline/transformer" },
       { "transform": "typescript-json/lib/transform" }
     ]
   }

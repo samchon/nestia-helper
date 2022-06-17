@@ -1,4 +1,4 @@
-import { assertType } from "typescript-is";
+import TSON from "typescript-json";
 
 import api from "../api";
 import { ISaleReview } from "../api/structures/ISaleReview";
@@ -16,5 +16,5 @@ export async function test_review(connection: api.IConnection): Promise<void> {
                 files: [],
             },
         );
-    assertType<typeof review>(review);
+    TSON.assert<typeof review>(review);
 }

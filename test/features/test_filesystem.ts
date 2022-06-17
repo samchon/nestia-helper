@@ -1,4 +1,4 @@
-import { assertType } from "typescript-is";
+import TSON from "typescript-json";
 
 import api from "../api";
 import { IFilesystemBucket } from "../api/structures/IFilesystemBucket";
@@ -9,5 +9,5 @@ export async function test_filesystem(
     const buckets: IFilesystemBucket[] = await api.functional.filesystem.get(
         connection,
     );
-    assertType<typeof buckets>(buckets);
+    TSON.assert<typeof buckets>(buckets);
 }

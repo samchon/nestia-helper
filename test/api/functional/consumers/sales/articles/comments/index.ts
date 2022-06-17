@@ -6,7 +6,6 @@
 //================================================================
 import { Fetcher, Primitive } from "nestia-fetcher";
 import type { IConnection } from "nestia-fetcher";
-import { createStringifier } from "typescript-json";
 
 import type { ISaleArticleComment } from "./../../../../../structures/ISaleArticleComment";
 
@@ -42,7 +41,6 @@ export function store(
         store.METHOD,
         store.path(section, saleId, articleId),
         input,
-        store.stringify,
     );
 }
 export namespace store {
@@ -64,5 +62,4 @@ export namespace store {
     ): string {
         return `/consumers/${section}/sales/${saleId}/articles/${articleId}/comments`;
     }
-    export const stringify = createStringifier<Input>();
 }
