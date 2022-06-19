@@ -1,6 +1,16 @@
-import * as nest from "@nestjs/common";
+import {
+    Get,
+    Post,
+    Patch,
+    Put,
+    Delete,
+    UseInterceptors,
+    applyDecorators,
+} from "@nestjs/common";
+
 import { TypedRouteInterceptor } from "./internal/TypedRouteInterceptor";
 import { get_route_arguments } from "./internal/get_route_arguments";
+import { stringify } from "typescript-json";
 
 /**
  * Router decorator functions.
@@ -69,11 +79,24 @@ export namespace TypedRoute {
 
         function route(...args: any[]): MethodDecorator {
             const [path, stringify] = get_route_arguments(...args);
-            return nest.applyDecorators(
-                nest[method](path),
-                nest.UseInterceptors(new TypedRouteInterceptor(stringify)),
+            return applyDecorators(
+                ROUTERS[method](path),
+                UseInterceptors(new TypedRouteInterceptor(stringify)),
             );
         }
         return route;
     }
 }
+
+const ROUTERS = {
+    Get,
+    Post,
+    Patch,
+    Put,
+    Delete,
+};
+Object.assign(TypedRoute.Get, stringify);
+Object.assign(TypedRoute.Delete, stringify);
+Object.assign(TypedRoute.Post, stringify);
+Object.assign(TypedRoute.Put, stringify);
+Object.assign(TypedRoute.Patch, stringify);

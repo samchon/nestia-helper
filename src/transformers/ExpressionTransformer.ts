@@ -1,15 +1,13 @@
 import path from "path";
 import ts from "typescript";
 import { IProject } from "typescript-json/lib/structures/IProject";
-import { IModuleImport } from "typescript-json/lib/structures/IModuleImport";
-import { StringifyFactory } from "typescript-json/lib/factories/features/StringifyFactory";
+import { StringifyProgrammer } from "typescript-json/lib/programmers/StringifyProgrammer";
 
 export namespace ExpressionTransformer {
     export function transform(
         project: IProject,
         type: ts.Type,
         expression: ts.CallExpression,
-        modulo: IModuleImport,
     ): ts.LeftHandSideExpression {
         //----
         // VALIDATIONS
@@ -56,14 +54,10 @@ export namespace ExpressionTransformer {
         //----
         // TRANSFORMATION
         //----
-        // PASS
-        modulo.used ||= true;
-
         // GENERATE STRINGIFY PLAN
-        const arrow: ts.ArrowFunction = StringifyFactory.generate({
-            ...modulo,
-            from: "lib",
-        })(project, type);
+        const arrow: ts.ArrowFunction = StringifyProgrammer.generate(
+            expression.expression,
+        )(project, type);
 
         // UPDATE DECORATOR FUNCTION CALL
         return ts.factory.updateCallExpression(

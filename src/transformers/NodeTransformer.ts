@@ -1,14 +1,9 @@
 import ts from "typescript";
 import { IProject } from "typescript-json/lib/structures/IProject";
-import { IModuleImport } from "typescript-json/lib/structures/IModuleImport";
 import { DecoratorTransformer } from "./DecoratorTransformer";
 
 export namespace NodeTransformer {
-    export function transform(
-        project: IProject,
-        method: ts.Node,
-        modulo: IModuleImport,
-    ): ts.Node {
+    export function transform(project: IProject, method: ts.Node): ts.Node {
         if (!ts.isMethodDeclaration(method)) return method;
         else if (
             method.decorators === undefined ||
@@ -28,12 +23,7 @@ export namespace NodeTransformer {
         return ts.factory.updateMethodDeclaration(
             method,
             method.decorators.map((decorator) =>
-                DecoratorTransformer.transform(
-                    project,
-                    escaped,
-                    decorator,
-                    modulo,
-                ),
+                DecoratorTransformer.transform(project, escaped, decorator),
             ),
             method.modifiers,
             method.asteriskToken,
