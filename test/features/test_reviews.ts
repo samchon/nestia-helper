@@ -16,5 +16,5 @@ export async function test_review(connection: api.IConnection): Promise<void> {
                 files: [],
             },
         );
-    TSON.assert<typeof review>(review);
+    TSON.assertType<typeof review>(review);
 }

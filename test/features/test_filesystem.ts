@@ -9,5 +9,5 @@ export async function test_filesystem(
     const buckets: IFilesystemBucket[] = await api.functional.filesystem.get(
         connection,
     );
-    TSON.assert<typeof buckets>(buckets);
+    TSON.assertType<typeof buckets>(buckets);
 }

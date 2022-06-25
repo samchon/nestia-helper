@@ -15,5 +15,5 @@ export async function test_comment(connection: api.IConnection): Promise<void> {
                 annonymous: false,
             },
         );
-    TSON.assert<typeof comment>(comment);
+    TSON.assertType<typeof comment>(comment);
 }

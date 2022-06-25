@@ -17,5 +17,5 @@ export async function test_question(
                 files: [],
             },
         );
-    TSON.assert<typeof question>(question);
+    TSON.assertType<typeof question>(question);
 }

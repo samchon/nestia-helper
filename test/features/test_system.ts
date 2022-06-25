@@ -5,5 +5,5 @@ import { ISystem } from "../api/structures/ISystem";
 
 export async function test_system(connection: api.IConnection): Promise<void> {
     const system: ISystem = await api.functional.system.get(connection);
-    TSON.assert<typeof system>(system);
+    TSON.assertType<typeof system>(system);
 }
