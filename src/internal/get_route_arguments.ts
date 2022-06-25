@@ -1,5 +1,3 @@
-import { StringifyFactory } from "typescript-json/lib/factories/StringifyFactory";
-
 export function get_route_arguments(
     ...args: any[]
 ): [string | string[] | undefined, (input: any) => string] {
@@ -12,14 +10,12 @@ export function get_route_arguments(
               (args[0][1] === undefined || typeof args[0][1] !== "function")
             ? undefined
             : undefined;
-    const tuple = path === undefined ? args[0] : args[1];
+    const functor = path === undefined ? args[0] : args[1];
     return [
         path,
-        tuple !== undefined
-            ? typeof tuple === "function"
-                ? tuple
-                : typeof tuple === "object"
-                ? StringifyFactory.generate(tuple)
+        functor !== undefined
+            ? typeof functor === "function"
+                ? functor
                 : JSON.stringify
             : JSON.stringify,
     ];

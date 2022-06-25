@@ -1,4 +1,4 @@
-import { assertType } from "typescript-is";
+import TSON from "typescript-json";
 
 import api from "../api";
 import { ISaleQuestion } from "../api/structures/ISaleQuestion";
@@ -17,5 +17,5 @@ export async function test_question(
                 files: [],
             },
         );
-    assertType<typeof question>(question);
+    TSON.assertType<typeof question>(question);
 }

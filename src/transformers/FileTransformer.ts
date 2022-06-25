@@ -10,6 +10,7 @@ export namespace FileTransformer {
         context: ts.TransformationContext,
         file: ts.SourceFile,
     ): ts.SourceFile {
+        // ITERATE NODES
         return ts.visitEachChild(
             file,
             (node) => iterate_node(project, context, node),

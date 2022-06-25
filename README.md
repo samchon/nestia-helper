@@ -258,7 +258,7 @@ Therefore, with this `ExceptionManager` and [TypedRoute](#typedroute) or [Encryp
 
 Below error classes are defaultly configured in this `ExceptionManager`
 
-  - `typescript-is.TypeGuardError`
+  - `typescript-json.TypeGuardError`
   - `nestia-fetcher.HttpError`
 
 ```typescript

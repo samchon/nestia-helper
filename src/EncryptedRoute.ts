@@ -1,4 +1,14 @@
-import * as nest from "@nestjs/common";
+import {
+    Get,
+    Post,
+    Patch,
+    Put,
+    Delete,
+    UseInterceptors,
+    applyDecorators,
+} from "@nestjs/common";
+import { stringify } from "typescript-json";
+
 import { EncryptedRouteInterceptor } from "./internal/EncryptedRouteInterceptor";
 import { get_route_arguments } from "./internal/get_route_arguments";
 
@@ -81,9 +91,9 @@ export namespace EncryptedRoute {
 
         function route(...args: any[]): MethodDecorator {
             const [path, stringify] = get_route_arguments(...args);
-            return nest.applyDecorators(
-                nest[method](path),
-                nest.UseInterceptors(
+            return applyDecorators(
+                ROUTERS[method](path),
+                UseInterceptors(
                     new EncryptedRouteInterceptor(method, stringify),
                 ),
             );
@@ -91,3 +101,16 @@ export namespace EncryptedRoute {
         return route;
     }
 }
+
+const ROUTERS = {
+    Get,
+    Post,
+    Put,
+    Patch,
+    Delete,
+};
+Object.assign(EncryptedRoute.Get, stringify);
+Object.assign(EncryptedRoute.Delete, stringify);
+Object.assign(EncryptedRoute.Post, stringify);
+Object.assign(EncryptedRoute.Put, stringify);
+Object.assign(EncryptedRoute.Patch, stringify);
