@@ -1,23 +1,39 @@
 # Nestia Helper
-Boost up `JSON.stringify()` function, of the API responses, 2x times faster.
-
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/samchon/nestia-helper/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
 [![Downloads](https://img.shields.io/npm/dm/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
 [![Build Status](https://github.com/samchon/nestia-helper/workflows/build/badge.svg)](https://github.com/samchon/nestia-helper/actions?query=workflow%3Abuild)
 
-`nestia-helper` is a helper library of `NestJS`, which can boost up the `JSON.stringify()` function 2x times faster about the API responses. Just by installing and utilizing this `nestia-helper`, your NestJS developed backend server will convert JSON string 2x times faster.
+Helper library of `NestJS` through `typescript-json`.
+
+`nestia-helper` is a helper library of `NestJS`, which boosts up `JSON.stringify()` function about 5x times faster, of the API responses. Also, `nestia-helper` automatically converts error, occured by `TSON.assertType()` function, to 400 status coded response. Therefore, you can easily validate request data type thorugh the `TSON.assertType()` function.
+
+Read the below code and feel how `nestia-helper` and `typescript-json` makes `NestJS` stronger.
 
 ```typescript
+import TSON from "typescript-json";
 import helper from "nestia-helper";
 import * as nest from "@nestjs/common";
 
 @nest.Controller("bbs/articles")
-export class BbsArticlesController
-{
-    // JSON.stringify for IPage<IBbsArticle.ISummary> would be 2 times faster 
-    @helper.TypedRoute.Get()
-    public get(): Promise<IPage<IBbsArticle.ISummary>>;
+export class BbsArticlesController {
+    // JSON.stringify() for `IPage<IBbsArticle.ISummary>` 
+    // would be boosted up about 5x times faster 
+    @helper.TypedRoute.Patch()
+    public get(
+        @nest.Body() input: IPage.IRequest
+    ): Promise<IPage<IBbsArticle.ISummary>> {
+        // when input value is not following its type,
+        // `TypeGuardError` would be thrown and
+        // 400 status code would be responded
+        assertType(input); 
+
+        const stmt = ArticleService.summarize(input.search);
+
+        // JSON-string generation, for response, 
+        // would be 5x times faster
+        return Paginator.paginate(stmt, input);
+    }
 }
 ```
 
@@ -26,6 +42,10 @@ export class BbsArticlesController
 
 ## Setup
 ### NPM Package
+At first, install this `nestia-helper` by the `npm install` command. 
+
+Also, you need additional `devDependencies` to compile the TypeScript code with transformation. Therefore, install those all libraries `typescript`, `ttypescript` and `ts-node`. Inform that, `ttypescript` is not mis-writing. Therefore, do not forget to install the `ttypescript`.
+
 ```bash
 npm install --save nestia-helper
 
@@ -35,12 +55,17 @@ npm install --save-dev ts-node
 ```
 
 ### tsconfig.json
-After the installation, you should configure the `tsconfig.json` file like below. Add the new property transform and its value `nestia-helper/lib/transform` into the `compilerOptions.plugins` array.
+After the installation, you've to configure the `tsconfig.json` file like below. 
 
-From now on, your NestJS backend server can convert response data to JSON-string 2x times faster, if you're utilizing [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute). Furthermore, surplus response data that're not written in the response type would be automatically erased.
+Add the new property `transform` and its value `typescript-json/lib/transform` into the `compilerOptions.plugins` array. Also, I recommend you to use the `strict` option, to enforce developers to distinguish whether each property is nullable or undefindable.
+
+From now on, your NestJS backend server can convert response data to JSON-string 5x times faster, if you're utilizing [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute). However, Automatic converter from `TSON.assertType()` function error to 400 status coded response does not require such `plugins` configuration.
+
+Therefore, you want only the `TSON.assertType()` function error converter only, skip this configuration.
 
 ```json
 {
+  "strict": true,
   "compilerOptions": {
     "plugins": [
       {
@@ -60,42 +85,38 @@ Router decorator functions.
 
 `TypedRoute` is an utility class containing router decorator functions.
 
-Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get` or `nest.Post`, router decorator functions in the `TypedRoute` supports [ExceptionManager](#exceptionmanager), who can convert custom error classes to the regular `nest.HttpException class`.
+If you've configured the [tsconfig.json](#tsconfigjson), JSON string conversion speed of response data would be boosted up about 5x times faster. Otherwise, you've not configured [tsconfig.json](#tsconfigjson), only 400 status response converter from `TSON.assertType()` function error would be activated.
 
-> If you've configured the [tsconfig.json](#tsconfigjson), `JSON.stringify()` function for the response data would be 2x times faster. Of course, surplus data that are not written in the response type would be automatically erased.
->
->```json
-> {
->   "compilerOptions": {
->     "plugins": [
->       {
->         "transform": "nestia-helper/lib/transform"
->       }
->     ]
->   }
-> }
-> ```
-
-Therefore, with the `TypedRoute` and [ExceptionManager](#exceptionmanager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
+For reference, with `TypedRoute` and `Exception`, you can add custom error converter like below.
 
 ```typescript
 import helper from "nestia-helper";
 import * as nest from "@nestjs/common";
 import * as orm from "typeorm";
 
-@nest.Controller("shopping/sales")
-export class ShoppingSalesController
+@nest.Controller("shopping/sales/:id/articles")
+export class ShoppingSaleArticlesController
 {
-    @helper.TypedRoute.Get(":id")
-    public async at
+    @helper.TypedRoute.Patch()
+    public async index
         (
             @helper.TypedParam("id", "string") id: string,
+            @nest.Body() input: IPage.IRequest
         ): Promise<IShoppingSale>
     {
+        // when input value is not following its type,
+        // `TypeGuardError` would be thrown and
+        // 400 status code would be responded
+        assertType(input); 
+
         // when `orm.EntityNotFound` occurs, 
         // it would be replaced to the `404` error
         const sale: ShoppingSale = await ShoppingSale.findOneOrFail(id);
-        return await ShoppingSaleProvider.json(sale);
+
+        // JSON-string generation, for response, 
+        // would be 5x times faster
+        const stmt = ShoppingSaleArticleService.summarize(sale, input.search);
+        return Paginator.paginate(stmt, input);
     }
 }
 
@@ -118,7 +139,7 @@ export class ShoppingSalesController
     public async pause
         (
             @helper.TypedParam("section", "string") section: string,
-            @helper.TypedParam("id", "number") id: number,
+            @helper.TypedParam("id", "uuid") id: number,
             @helper.TypedParam("paused", "boolean") paused: boolean
         ): Promise<void>;
 }
@@ -127,25 +148,14 @@ export class ShoppingSalesController
 ### EncryptedRoute
 Encrypted router decorator functions.
 
-`EncryptedRoute` is an utility class containing encrypted router decorator functions. Unlike the basic router decorator functions provided from the `NestJS` like `nest.Get()` or `nest.Post()`, router decorator functions in the `EncryptedRoute` encrypts the response body with AES-128/256 algorithm. Also, they support the [ExceptionManager](#exception-manager) who can convert custom error classes to the regular `nest.HttpException` class. 
+`EncryptedRoute` is almost same with [TypedRoute](#typedroute). Only difference is whether to encrypt response body or not. 
 
-> If you've configured the [tsconfig.json](#tsconfigjson), `JSON.stringify()` function for the response data would be 2x times faster. Also, surplus data that are not written in the response type would be automatically erased. However, the boosting would be offset by the encryption logic, maybe.
->
->```json
-> {
->   "compilerOptions": {
->     "plugins": [
->       {
->         "transform": "nestia-helper/lib/transform"
->       }
->     ]
->   }
-> }
-> ```
+For referecen, `EncryptedRoute` encrypts response body using those options. But don't feel annoying. You can generate SDK library for client developers very easily through [nestia](https://github.com/samchon/nestia), which encrypts and descrypts the AES-125/256 content automatically.
 
-Therefore, with the `EncryptedRoute` and [ExceptionManager](#exception-manager), you can manage your custom error classes much systematically. You can avoid 500 internal server error or hard coding implementations about the custom error classes.
-
-Furthermore, you can enhance security of your HTTP server by encrypting the response body through this `EncryptedRoute`. Also, don't be annoying about such AES-128/256 encryption and decryption. If you build an SDK library of your HTTP server through the [nestia](https://github.com/samchon/nestia), such encryption and decryption would be automatically done in the SDK level.
+  - AES-128/256
+  - CBC mode
+  - PKCS #5 Padding
+  - Base64 Encoding
 
 ```typescript
 @nest.Controller("bbs/articles")
