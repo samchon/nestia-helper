@@ -19,29 +19,22 @@ export namespace ExpressionTransformer {
 
         // CHECK TO BE TRANSFORMED
         const validate: boolean = (() => {
-            // CHECK GENERIC TYPE
-            if (type.isTypeParameter() === true) return false;
-
             // CHECK FILENAME
             const location: string = path.resolve(
                 signature.declaration.getSourceFile().fileName,
             );
             if (LIB_PATHS.some((str) => str === location) === false)
                 return false;
+
             // CHECK DUPLICATE BOOSTER
-            else if (expression.arguments.length >= 2) return false;
+            if (expression.arguments.length >= 2) return false;
             else if (expression.arguments.length !== 0) {
                 const last: ts.Expression =
                     expression.arguments[expression.arguments.length - 1];
-                if (
-                    ts.isTupleTypeNode(last) &&
-                    last.elements.length === 2 &&
-                    ts.isArrowFunction(last.elements[1])
-                )
+                const type: ts.Type = project.checker.getTypeAtLocation(last);
+                if ((type.getFlags() & ts.TypeFlags.Narrowable) !== 0)
                     return false;
-                else if (ts.isFunctionLike(last)) return false;
             }
-
             return true;
         })();
         if (validate === false) return expression;
