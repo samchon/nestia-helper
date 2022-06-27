@@ -9,7 +9,10 @@ export class ConsumerSaleReviewsController extends SaleInquiriesController<
     ISaleReview.IContent,
     ISaleReview.IStore,
     ISaleReview
->((input) => TSON.stringify(input)) {
+>({
+    index: (input) => TSON.stringify(input),
+    at: (input) => TSON.stringify(input),
+}) {
     public constructor() {
         super((input) => ({
             id: 0,

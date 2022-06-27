@@ -3,16 +3,32 @@ import * as nest from "@nestjs/common";
 import helper from "../../src/index";
 
 import { ISaleInquiry } from "../api/structures/ISaleInquiry";
+import { IPage } from "../api/structures/IPage";
 
 export function SaleInquiriesController<
     Content extends ISaleInquiry.IContent,
     Store extends ISaleInquiry.IStore,
     Json extends ISaleInquiry<Content>,
->(stringify: (input: Json) => string) {
+>(stringifiers: SaleInquiriesController.IStringifiers<Json>) {
     class SaleInquiriesController {
         protected constructor(
             private readonly convert: (input: Store) => Json,
         ) {}
+
+        @helper.TypedRoute.Get(stringifiers.index)
+        public async index(
+            @nest.Request() request: express.Request,
+            @helper.TypedParam("section", "string") section: string,
+            @helper.TypedParam("saleId", "string") saleId: string,
+            @nest.Body() input: IPage.IRequest,
+        ): Promise<IPage<Json>> {
+            request;
+            section;
+            saleId;
+            input;
+
+            return null!;
+        }
 
         /**
          * Store a new inquiry.
@@ -28,7 +44,7 @@ export function SaleInquiriesController<
          * @throw 400 bad request error when type of the input data is not valid
          * @throw 401 unauthorized error when you've not logged in yet
          */
-        @helper.TypedRoute.Post(stringify)
+        @helper.TypedRoute.Post(stringifiers.at)
         public async store(
             @nest.Request() request: express.Request,
             @helper.TypedParam("section", "string") section: string,
@@ -39,8 +55,15 @@ export function SaleInquiriesController<
             section;
             saleId;
 
-            return this.convert(input);
+            const data = this.convert(input);
+            return data;
         }
     }
     return SaleInquiriesController;
+}
+export namespace SaleInquiriesController {
+    export interface IStringifiers<Json extends object> {
+        index(input: IPage<Json>): string;
+        at(input: Json): string;
+    }
 }
