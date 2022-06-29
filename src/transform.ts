@@ -1,11 +1,12 @@
 import ts from "typescript";
 
-import { IProject } from "typescript-json/lib/structures/IProject";
+import { IProject } from "typescript-json/lib/transformers/IProject";
+import { ITransformOptions } from "typescript-json/lib/transformers/ITransformOptions";
 import { FileTransformer } from "./transformers/FileTransformer";
 
 export default function transform(
     program: ts.Program,
-    options?: Partial<IProject.IOptions>,
+    options?: ITransformOptions,
 ): ts.TransformerFactory<ts.SourceFile> {
     const project: IProject = {
         program,
