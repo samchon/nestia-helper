@@ -1,5 +1,5 @@
 import ts from "typescript";
-import { IProject } from "typescript-json/lib/structures/IProject";
+import { IProject } from "typescript-json/lib/transformers/IProject";
 
 import { ExpressionTransformer } from "./ExpressionTransformer";
 

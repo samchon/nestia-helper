@@ -1,6 +1,6 @@
 import ts from "typescript";
 import NestedError from "nested-error-stacks";
-import { IProject } from "typescript-json/lib/structures/IProject";
+import { IProject } from "typescript-json/lib/transformers/IProject";
 
 import { NodeTransformer } from "./NodeTransformer";
 

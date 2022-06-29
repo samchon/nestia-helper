@@ -1,7 +1,8 @@
 import path from "path";
 import ts from "typescript";
-import { IProject } from "typescript-json/lib/structures/IProject";
+import { IProject } from "typescript-json/lib/transformers/IProject";
 import { StringifyProgrammer } from "typescript-json/lib/programmers/StringifyProgrammer";
+import { TypeFactory } from "typescript-json/lib/factories/TypeFactory";
 
 export namespace ExpressionTransformer {
     export function transform(
@@ -32,8 +33,7 @@ export namespace ExpressionTransformer {
                 const last: ts.Expression =
                     expression.arguments[expression.arguments.length - 1];
                 const type: ts.Type = project.checker.getTypeAtLocation(last);
-                if ((type.getFlags() & ts.TypeFlags.Narrowable) !== 0)
-                    return false;
+                if (TypeFactory.isFunction(type) === true) return false;
             }
             return true;
         })();
@@ -49,8 +49,9 @@ export namespace ExpressionTransformer {
         //----
         // GENERATE STRINGIFY PLAN
         const arrow: ts.ArrowFunction = StringifyProgrammer.generate(
+            project,
             expression.expression,
-        )(project, type);
+        )(type);
 
         // UPDATE DECORATOR FUNCTION CALL
         return ts.factory.updateCallExpression(
