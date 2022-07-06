@@ -12,6 +12,7 @@ export class ConsumerSaleQuestionsController extends SaleInquiriesController<
 >({
     index: (input) => TSON.stringify(input),
     at: (input) => TSON.stringify(input),
+    assert: (input) => TSON.assertType(input),
 }) {
     public constructor() {
         super((input) => ({

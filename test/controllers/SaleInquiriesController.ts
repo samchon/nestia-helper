@@ -9,18 +9,18 @@ export function SaleInquiriesController<
     Content extends ISaleInquiry.IContent,
     Store extends ISaleInquiry.IStore,
     Json extends ISaleInquiry<Content>,
->(stringifiers: SaleInquiriesController.IStringifiers<Json>) {
+>(trait: SaleInquiriesController.ITrait<Json, Store>) {
     class SaleInquiriesController {
         protected constructor(
             private readonly convert: (input: Store) => Json,
         ) {}
 
-        @helper.TypedRoute.Get(stringifiers.index)
+        @helper.TypedRoute.Get(trait.index)
         public async index(
             @nest.Request() request: express.Request,
             @helper.TypedParam("section", "string") section: string,
             @helper.TypedParam("saleId", "string") saleId: string,
-            @nest.Body() input: IPage.IRequest,
+            @helper.TypedBody() input: IPage.IRequest,
         ): Promise<IPage<Json>> {
             request;
             section;
@@ -44,12 +44,12 @@ export function SaleInquiriesController<
          * @throw 400 bad request error when type of the input data is not valid
          * @throw 401 unauthorized error when you've not logged in yet
          */
-        @helper.TypedRoute.Post(stringifiers.at)
+        @helper.TypedRoute.Post(trait.at)
         public async store(
             @nest.Request() request: express.Request,
             @helper.TypedParam("section", "string") section: string,
             @helper.TypedParam("saleId", "string") saleId: string,
-            @nest.Body() input: Store,
+            @helper.TypedBody(trait.assert) input: Store,
         ): Promise<Json> {
             request;
             section;
@@ -62,8 +62,9 @@ export function SaleInquiriesController<
     return SaleInquiriesController;
 }
 export namespace SaleInquiriesController {
-    export interface IStringifiers<Json extends object> {
+    export interface ITrait<Json extends object, Store extends object> {
         index(input: IPage<Json>): string;
         at(input: Json): string;
+        assert(input: Store): Store;
     }
 }

@@ -29,7 +29,7 @@ export class ConsumerSaleArticleCommentsController {
         @helper.TypedParam("section", "string") section: string,
         @helper.TypedParam("saleId", "number") saleId: number,
         @helper.TypedParam("articleId", "number") articleId: number,
-        @nest.Body() input: ISaleArticleComment.IStore,
+        @helper.TypedBody() input: ISaleArticleComment.IStore,
     ): Promise<ISaleArticleComment> {
         request;
         section;
