@@ -1,12 +1,24 @@
 import express from "express";
 import raw from "raw-body";
 import {
+    BadRequestException,
     createParamDecorator,
     ExecutionContext,
-    HttpException,
 } from "@nestjs/common";
 import { assertType, TypeGuardError } from "typescript-json";
 
+/**
+ * Safe body decorator.
+ *
+ * `TypedBody` is a decorator function getting JSON data from HTTP request. Also,
+ * it validates the JSON data type through
+ * [`TSON.assertType()`](https://github.com/samchon/typescript-json#runtime-type-checkers)
+ * function and throws `BadRequestException` error (status code: 400), if the JSON
+ * data is not following the promised type.
+ *
+ * @param assertion Custom assertion function. Default is `TSON.assertType()`
+ * @author Jeongho Nam - https://github.com/samchon
+ */
 export function TypedBody<T>(assertion?: (input: T) => any) {
     return createParamDecorator(async function TypedBody(
         _unknown: any,
@@ -14,9 +26,8 @@ export function TypedBody<T>(assertion?: (input: T) => any) {
     ) {
         const request: express.Request = context.switchToHttp().getRequest();
         if (request.headers["content-type"] !== "application/json") {
-            throw new HttpException(
+            throw new BadRequestException(
                 "Request body is not the application/json.",
-                400,
             );
         }
         const data: any = request.body
@@ -28,15 +39,12 @@ export function TypedBody<T>(assertion?: (input: T) => any) {
                 assertion(data);
             } catch (exp) {
                 if (exp instanceof TypeGuardError)
-                    throw new HttpException(
-                        {
-                            path: exp.path,
-                            reason: exp.message,
-                            message:
-                                "Request message is not following the promised type.",
-                        },
-                        400,
-                    );
+                    throw new BadRequestException({
+                        path: exp.path,
+                        reason: exp.message,
+                        message:
+                            "Request message is not following the promised type.",
+                    });
                 throw exp;
             }
         return data;

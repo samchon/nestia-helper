@@ -5,7 +5,6 @@ import {
     BadRequestException,
     createParamDecorator,
     ExecutionContext,
-    HttpException,
 } from "@nestjs/common";
 import { assertType, TypeGuardError } from "typescript-json";
 
@@ -16,19 +15,19 @@ import { headers_to_object } from "./internal/headers_to_object";
 /**
  * Encrypted body decorator.
  *
- * `EncryptedBody` is a decoratord function getting special JSON data from the HTTP request
- * who've encrypted by the AES-125/256 algorithm. Therefore, `EncryptedBody` is suitable
- * for enhancing security by hiding request body data from the client.
+ * `EncryptedBody` is a decorator function getting JSON data from HTTP request who've
+ * been encrypted by AES-128/256 algorithm. Also, `EncyrptedBody` validates the JSON
+ * data type through
+ * [`TSON.assertType()`](https://github.com/samchon/typescript-json#runtime-type-checkers)
+ * function and throws `BadRequestException` error (status code: 400), if the JSON
+ * data is not following the promised type.
  *
- * Also you don't need to worry about the annyoing encryption and decryption. If you build
- * an SDK library of your HTTP server through the [nestia](https://github.com/samchon/nestia),
- * such encryption would be automatically done in the SDK level.
+ * For reference, `EncryptedRoute` decrypts request body usnig those options.
  *
- * > However, if you've configure the {@link IEncryptionPassword.disabled} to be `true`,
- * > who've defined in the {@link EncryptedModule} or {@link EncryptedController}, you can
- * > disable the encryption and decryption algorithm. Therefore, when the
- * > {@link IEncryptionPassword.disable} becomes the `true`, request body would be
- * > considered as a plain text instead.
+ *  - AES-128/256
+ *  - CBC mode
+ *  - PKCS #5 Padding
+ *  - Base64 Encoding
  *
  * @return Parameter decorator
  * @author Jeongho Nam - https://github.com/samchon
@@ -40,7 +39,9 @@ export function EncryptedBody<T>(assertion?: (input: T) => any) {
     ) {
         const request: express.Request = ctx.switchToHttp().getRequest();
         if (request.readable === false)
-            throw new HttpException("Request body is not the text/plain.", 400);
+            throw new BadRequestException(
+                "Request body is not the text/plain.",
+            );
 
         const param:
             | IEncryptionPassword
@@ -79,15 +80,12 @@ export function EncryptedBody<T>(assertion?: (input: T) => any) {
                 assertion(data);
             } catch (exp) {
                 if (exp instanceof TypeGuardError)
-                    throw new HttpException(
-                        {
-                            path: exp.path,
-                            reason: exp.message,
-                            message:
-                                "Request message is not following the promised type.",
-                        },
-                        400,
-                    );
+                    throw new BadRequestException({
+                        path: exp.path,
+                        reason: exp.message,
+                        message:
+                            "Request message is not following the promised type.",
+                    });
                 throw exp;
             }
         return data;

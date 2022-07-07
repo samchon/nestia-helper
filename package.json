@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.0.5-dev.20220707",
+  "version": "3.0.5",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

@@ -13,18 +13,15 @@ import { get_route_arguments } from "./internal/get_route_arguments";
 import { stringify } from "typescript-json";
 
 /**
- * Router decorator functions.
+ * Safe router decorator functions.
  *
- * `TypedRoute` is an utility class containing router decorator functions.
+ * `TypedRoute` is a module containing router decorator functions which can boost up
+ * JSON string conversion speed about 5x times faster, through
+ * [`TSON.stringify()`](https://github.com/samchon/typescript-json#fastest-json-string-conversion).
  *
- * Unlike the basic router decorator functions provided from the NestJS like
- * {@link nest.Get} or {@link nest.Post}, router decorator functions in the `TypedRoute`
- * supports {@link ExceptionManager}, who can convert custom error classes to the regular
- * {@link nest.HttpException} class.
- *
- * Therefore, with the `TypedRoute` and {@link ExceptionManger}, you can manage your
- * custom error classes much systematically. You can avoid 500 internal server error or
- * hard coding implementations about the custom error classes.
+ * Also, router functions in `TypedRoute` can convert custom error classes to the
+ * regular {@link nest.HttpException} class automatically, through
+ * {@link ExceptionManager}.
  *
  * @author Jeongho Nam - https://github.com/samchon
  */
@@ -69,6 +66,9 @@ export namespace TypedRoute {
      */
     export const Delete = Generator("Delete");
 
+    /**
+     * @internal
+     */
     function Generator(method: "Get" | "Post" | "Put" | "Patch" | "Delete") {
         function route(path?: string | string[]): MethodDecorator;
         function route(stringify?: (input: any) => string): MethodDecorator;
@@ -88,6 +88,9 @@ export namespace TypedRoute {
     }
 }
 
+/**
+ * @internal
+ */
 const ROUTERS = {
     Get,
     Post,
