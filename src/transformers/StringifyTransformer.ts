@@ -4,8 +4,19 @@ import { IProject } from "typescript-json/lib/transformers/IProject";
 import { StringifyProgrammer } from "typescript-json/lib/programmers/StringifyProgrammer";
 import { TypeFactory } from "typescript-json/lib/factories/TypeFactory";
 
-export namespace ExpressionTransformer {
+export namespace StringifyTransformer {
     export function transform(
+        project: IProject,
+        type: ts.Type,
+        decorator: ts.Decorator,
+    ): ts.Decorator {
+        if (!ts.isCallExpression(decorator.expression)) return decorator;
+        return ts.factory.createDecorator(
+            stringify(project, type, decorator.expression),
+        );
+    }
+
+    function stringify(
         project: IProject,
         type: ts.Type,
         expression: ts.CallExpression,
@@ -39,7 +50,7 @@ export namespace ExpressionTransformer {
         })();
         if (validate === false) return expression;
 
-        // GET TYPE NODE
+        // CHECK TYPE NODE
         const typeNode: ts.TypeNode | undefined =
             project.checker.typeToTypeNode(type, undefined, undefined);
         if (typeNode === undefined) return expression;

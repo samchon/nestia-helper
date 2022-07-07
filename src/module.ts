@@ -4,5 +4,6 @@ export * from "./EncryptedModule";
 export * from "./EncryptedRoute";
 export * from "./ExceptionManager";
 export * from "./PlainBody";
+export * from "./TypedBody";
 export * from "./TypedParam";
 export * from "./TypedRoute";

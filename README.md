@@ -4,9 +4,9 @@
 [![Downloads](https://img.shields.io/npm/dm/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
 [![Build Status](https://github.com/samchon/nestia-helper/workflows/build/badge.svg)](https://github.com/samchon/nestia-helper/actions?query=workflow%3Abuild)
 
-Helper library of `NestJS` through `typescript-json`.
+Helper library of `NestJS` through [typescript-json](https://github.com/samchon/typescript-json).
 
-`nestia-helper` is a helper library of `NestJS`, which boosts up `JSON.stringify()` function about 5x times faster, of the API responses. Also, `nestia-helper` automatically converts error, occured by `TSON.assertType()` function, to 400 status coded response. Therefore, you can easily validate request data type thorugh the `TSON.assertType()` function.
+`nestia-helper` is a helper library of `NestJS`, which boosts up [`JSON.stringify()`](https://github.com/samchon/typescript-json#fastest-json-string-conversion) function about 5x times faster, of the API responses. Also, `nestia-helper` automatically validates request body from client, through the [`TSON.assertType()`](https://github.com/samchon/typescript-json#runtime-type-checkers) function.
 
 Read the below code and feel how `nestia-helper` and `typescript-json` makes `NestJS` stronger.
 
@@ -17,21 +17,23 @@ import * as nest from "@nestjs/common";
 
 @nest.Controller("bbs/articles")
 export class BbsArticlesController {
-    // JSON.stringify() for `IPage<IBbsArticle.ISummary>` 
-    // would be boosted up about 5x times faster 
-    @helper.TypedRoute.Patch()
-    public get(
-        @nest.Body() input: IPage.IRequest
-    ): Promise<IPage<IBbsArticle.ISummary>> {
-        // when input value is not following its type,
-        // `TypeGuardError` would be thrown and
-        // 400 status code would be responded
-        assertType(input); 
+    //----
+    // `TSON.stringify()` for `IBbsArticle` 
+    // Boost up JSON conversion speed about 5x times faster 
+    //----
+    // `TSON.assertType()` for `IBbsArticle.IStore`
+    // If client request body is not following type type, 
+    // `BadRequestException` (status code: 400) would be thrown
+    //----
+    @helper.TypedRoute.Post()
+    public async store(
+        // automatic validation
+        @helper.TypedBody() input: IBbsArticle.IStore
+    ): Promise<IBbsArticle> {
+        const article: BbsArticle = await BbsArticeProvider.store(input);
+        const json: IBbsArticle = await BbsArticleProvider.json().getOne(article);
 
-        const stmt = ArticleService.summarize(input.search);
-
-        // JSON-string generation, for response, 
-        // would be 5x times faster
+        // 5x times faster JSON conversion
         return Paginator.paginate(stmt, input);
     }
 }
@@ -59,10 +61,6 @@ After the installation, you've to configure the `tsconfig.json` file like below.
 
 Add the new property `transform` and its value `typescript-json/lib/transform` into the `compilerOptions.plugins` array. Also, I recommend you to use the `strict` option, to enforce developers to distinguish whether each property is nullable or undefindable.
 
-From now on, your NestJS backend server can convert response data to JSON-string 5x times faster, if you're utilizing [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute). However, Automatic converter from `TSON.assertType()` function error to 400 status coded response does not require such `plugins` configuration.
-
-Therefore, you want only the `TSON.assertType()` function error converter only, skip this configuration.
-
 ```json
 {
   "strict": true,
@@ -80,14 +78,30 @@ Therefore, you want only the `TSON.assertType()` function error converter only, 
 
 
 ## Features
+### TypedBody
+Safe JSON body decorator function by [`TSON.assertType()`](https://github.com/samchon/typescript-json#runtime-type-checkers).
+
+`TypedBody` is a decorator function which validates request body data from client, through `TSON.assertType()` function. If request body data from client is not following the promised type, 400 status error would be thrown.
+
+```typescript
+export class ShoppingSaleArticlesController {
+    @helper.TypedRoute.Patch("clear")
+    public async clear(
+        @helper.TypedBody() input: IShoppingSaleArticle.IClear
+    ): Promise<void> {
+        // If client is not following the typeof `input`,
+        // `BadRequestException` (status code: 400) would be thrown 
+        await ShoppingSaleArticleProvider.clear(input);        
+    }
+}
+```
+
 ### TypedRoute
-Router decorator functions.
+Router decorator functions using [`TSON.stringify()`](https://github.com/samchon/typescript-json#fastest-json-string-conversion)
 
 `TypedRoute` is an utility class containing router decorator functions.
 
-If you've configured the [tsconfig.json](#tsconfigjson), JSON string conversion speed of response data would be boosted up about 5x times faster. Otherwise, you've not configured [tsconfig.json](#tsconfigjson), only 400 status response converter from `TSON.assertType()` function error would be activated.
-
-For reference, with `TypedRoute` and `Exception`, you can add custom error converter like below.
+JSON string conversion speed of response data would be 5x times faster.
 
 ```typescript
 import helper from "nestia-helper";
@@ -101,35 +115,25 @@ export class ShoppingSaleArticlesController
     public async index
         (
             @helper.TypedParam("id", "string") id: string,
-            @nest.Body() input: IPage.IRequest
-        ): Promise<IShoppingSale>
+            @nest.TypedBody() input: IPage.IRequest
+        ): Promise<IShoppingSaleArticle>
     {
-        // when input value is not following its type,
-        // `TypeGuardError` would be thrown and
-        // 400 status code would be responded
-        assertType(input); 
-
-        // when `orm.EntityNotFound` occurs, 
-        // it would be replaced to the `404` error
         const sale: ShoppingSale = await ShoppingSale.findOneOrFail(id);
+        const stmt: orm.SelectQueryBuilder<ShoppingSaleArticle> =
+            ShoppingSaleArticleProvider.summarize(sale, input.search);
 
-        // JSON-string generation, for response, 
-        // would be 5x times faster
-        const stmt = ShoppingSaleArticleService.summarize(sale, input.search);
+        // JSON string conversion would be 5x times faster
         return Paginator.paginate(stmt, input);
     }
 }
-
-helper.ExceptionManager.insert(orm.EntityNotFoundError, exp => 
-{
-    return new nest.NotFoundException(exp.message);
-});
 ```
 
 ### TypedParam
 URL parameter decorator with type.
 
 `TypedParam` is a decorator function getting specific typed parameter from the HTTP request URL. It's almost same with the `nest.Param`, but `TypedParam` can specify the parameter type manually. Beside, the `nest.Param` always parses all of the parameters as string type.
+
+For reference, if client requests wrong typed URL parameter, `BadRequestException` (status code: 400) would be thrown.
 
 ```typescript
 @nest.Controller("shopping/sales")
@@ -145,12 +149,12 @@ export class ShoppingSalesController
 }
 ```
 
-### EncryptedRoute
-Encrypted router decorator functions.
+### EncryptedBody
+Encrypted body decorator.
 
-`EncryptedRoute` is almost same with [TypedRoute](#typedroute). Only difference is whether to encrypt response body or not. 
+`EncryptedBody` is almost same with [TypedBody](#typedbody). Only difference is whether to encrypt request body or not.
 
-For referecen, `EncryptedRoute` encrypts response body using those options. But don't feel annoying. You can generate SDK library for client developers very easily through [nestia](https://github.com/samchon/nestia), which encrypts and descrypts the AES-125/256 content automatically.
+For referece, `EncryptedBody` encrypts request body using those options. But don't feel annoying. You can generate SDK library for client developers very easily through [nestia](https://github.com/samchon/nestia), which encrypts and descrypts the AES-125/256 content automatically.
 
   - AES-128/256
   - CBC mode
@@ -161,28 +165,12 @@ For referecen, `EncryptedRoute` encrypts response body using those options. But 
 @nest.Controller("bbs/articles")
 export class BbsArticlesController
 {
-    @helper.EncryptedRoute.Get(":id")
-    public async at
-        (
-            @nest.Param("id") id: string
-        ): Promise<IBbsArticle>;
-}
-```
-
-### EncryptedBody
-Encrypted body decorator.
-
-`EncryptedBody` is a decorator function getting special JSON data from the HTTP request who've encrypted by the AES-125/256 algorithm. Therefore, `EncryptedBody` is suitable for enhancing security by hiding request body data from the client.
-
-Also you don't need to worry about the annyoing encryption and decryption. If you build an SDK library of your HTTP server through the [nestia](https://github.com/samchon/nestia), such encryption would be automatically done in the SDK level.
-
-```typescript
-@nest.Controller("bbs/articles")
-export class BbsArticlesController
-{
     @helper.EncryptedRoute.Post()
     public async store
         (
+            // Decrypt encrypted requst body
+            // If client is not following `IBbsArticle.IStore` type,
+            // `BadRequestException` (status code: 400) would be thrown
             @helper.EncryptedBody() input: IBbsArticle.IStore
         ): Promise<IBbsArticle>;
 
@@ -195,12 +183,38 @@ export class BbsArticlesController
 }
 ```
 
+### EncryptedRoute
+Encrypted router decorator functions.
+
+`EncryptedRoute` is almost same with [TypedRoute](#typedroute). Only difference is whether to encrypt response body or not.
+
+For referece, `EncryptedRoute` encrypts response body using those options. But don't feel annoying. You can generate SDK library for client developers very easily through [nestia](https://github.com/samchon/nestia), which encrypts and descrypts the AES-125/256 content automatically.
+
+  - AES-128/256
+  - CBC mode
+  - PKCS #5 Padding
+  - Base64 Encoding
+
+```typescript
+@nest.Controller("bbs/articles")
+export class BbsArticlesController
+{
+    // JSON string conversion speed would be 5x times faster
+    // But the boosting would be diluted by encryption
+    @helper.EncryptedRoute.Get(":id")
+    public async at
+        (
+            @nest.Param("id") id: string
+        ): Promise<IBbsArticle>;
+}
+```
+
 ### EncryptedController
 Encrypted controller.
 
-`EncryptedController` is an extension of the `nest.Controller` class decorator function who configures encryption password of the AES-128/256 algorithm. The encryption algorithm and password would be used by [EncryptedRoute](#encryptedroute) and [EncryptedBody](#encryptedbody) to encrypt the request and response body of the HTTP protocol.
+`EncryptedController` is an extension of the `nest.Controller` class decorator function who configures encryption password of the AES-128/256 algorithm. The encryption algorithm and password would be used by [EncryptedRoute](#encryptedroute) and [EncryptedBody](#encryptedbody).
 
-By the way, you can configure the encryption password in the global level by using [EncryptedModule](#encryptedmodule) instead of the `nest.Module` in the module level. In that case, you don't need to use this `EncryptedController` more. Just use the `nest.Controller` without duplicated encryption password definitions.
+By the way, you can configure the encryption password in the global level by using [EncryptedModule](#encryptedmodule), which can replace `nest.Module`. In that case, you don't need to use this `EncryptedController` more.
 
 Of course, if you want to use different encryption password from the [EncryptedModule](#encryptedmodule), this `EncryptedController` would be useful again. Therefore, I recommend to use this `EncryptedController` decorator function only when you must configure different encryption password from the [EncryptedModule](#encryptedmodule) .
 
@@ -222,7 +236,7 @@ export class PaymentWebhooksController
 ### EncryptedModule
 Encrypted module.
 
-`EncryptedModule` is an extension of the `nest.Module` class decorator function who configures encryption password of the AES-128/256 algorithm. The encryption algorithm and password would be used by [EncryptedRoute](#encryptedroute) and [EncryptedBody](#encryptedbody) to encrypt the request and response bod of the HTTP protocol.
+`EncryptedModule` is an extension of the `nest.Module` class decorator function who configures encryption password of the AES-128/256 algorithm. The encryption algorithm and password would be used by [EncryptedRoute](#encryptedroute) and [EncryptedBody](#encryptedbody).
 
 By using this `EncryptedModule` decorator function, all of the controllers configured in the metadata would be automatically changed to the [EncryptedController](#encryptedcontroller) with the password. If there're some original [EncryptedController](#encryptedcontroller) decorated classes in the metadata, their encryption password would be kept.
 
@@ -261,8 +275,7 @@ Exception manager for HTTP server.
 
 `ExceptionManager` is an utility class who can insert or erase custom error class with its convertion method to a regular `nest.HttpException` instance.
 
-If you define an API function through [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute)
-instead of the basic router decorator functions like `nest.Get` or `nest.Post` and the API function throws a custom error whose class has been inserted in this EntityManager, the error would be automatically converted to the regular `nest.HttpException` instance by the `ExceptionManager.Closure` function.
+If you've define an API function through [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute) and the API function throws a custom error enrolled `EntityManager`, the error would be automatically converted to the regular `nest.HttpException` instance by the `ExceptionManager.Closure` function.
 
 Therefore, with this `ExceptionManager` and [TypedRoute](#typedroute) or [EncryptedRoute](#encryptedroute), you can manage your custom error classes much systemtically. You can avoid 500 internal server error or hard coding implementation about the custom error classes.
 

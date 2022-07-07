@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -38,13 +38,10 @@
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
     "git-last-commit": "^1.0.1",
-    "nestia": "^2.1.5",
+    "nestia": "^3.0.6",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "suppress-warnings": "^1.0.2",
-    "ts-node": "^10.4.0",
-    "ttypescript": "^1.5.13",
-    "typescript": "^4.5.4"
+    "suppress-warnings": "^1.0.2"
   },
   "dependencies": {
     "@nestjs/common": "x.x.x",
@@ -56,6 +53,6 @@
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",
-    "typescript-json": "^3.0.6"
+    "typescript-json": "^3.0.10"
   }
 }
