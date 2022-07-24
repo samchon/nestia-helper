@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -41,18 +41,21 @@
     "nestia": "^3.0.6",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "suppress-warnings": "^1.0.2"
+    "suppress-warnings": "^1.0.2",
+    "ts-node": "^10.9.1",
+    "ttypescript": "^1.5.13"
   },
   "dependencies": {
     "@nestjs/common": "x.x.x",
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
     "@types/express": "x.x.x",
+    "detect-ts-node": "^1.0.5",
     "nested-error-stacks": "^2.1.1",
     "nestia-fetcher": "^2.0.1",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",
-    "typescript-json": "^3.0.10"
+    "typescript-json": "^3.1.1"
   }
 }

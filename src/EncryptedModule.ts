@@ -1,5 +1,6 @@
 import fs from "fs";
-import { ModuleMetadata, Module } from "@nestjs/common";
+import is_ts_node from "detect-ts-node";
+import { Module, ModuleMetadata } from "@nestjs/common";
 
 import { IEncryptionPassword } from "nestia-fetcher/lib/IEncryptionPassword";
 import { ENCRYPTION_METADATA_KEY } from "./internal/EncryptedConstant";
@@ -117,6 +118,7 @@ export namespace EncryptedModule {
                     current.substr(0, current.length - 3)
                 );
                 for (const key in external) {
+                    console.log(key);
                     const instance: object = external[key];
                     if (Reflect.getMetadata("path", instance) !== undefined)
                         controllers.push(instance);
@@ -124,6 +126,5 @@ export namespace EncryptedModule {
             }
         }
     }
-
-    const EXTENSION = __filename.substr(-2);
 }
+const EXTENSION = is_ts_node ? "ts" : "js";

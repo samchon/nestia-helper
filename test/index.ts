@@ -1,13 +1,7 @@
 import api from "./api";
-import helper from "../src";
+import { EncryptedModule } from "../src";
 import { NestFactory } from "@nestjs/core";
 import { IEncryptionPassword } from "nestia-fetcher";
-
-import { FilesystemController } from "./controllers/FilesystemController";
-import { ConsumerSaleArticleCommentsController } from "./controllers/ConsumerSaleArticleCommentsController";
-import { ConsumerSaleReviewsController } from "./controllers/ConsumerSaleReviewsController";
-import { ConsumerSaleQuestionsController } from "./controllers/ConsumerSaleQuestionsController";
-import { SystemController } from "./controllers/SystemController";
 
 import { test_comment } from "./features/test_comments";
 import { test_filesystem } from "./features/test_filesystem";
@@ -20,20 +14,6 @@ const ENCRYPTION_PASSWORD: IEncryptionPassword = {
     iv: "abcd".repeat(4),
 };
 
-@helper.EncryptedModule(
-    {
-        controllers: [
-            FilesystemController,
-            SystemController,
-            ConsumerSaleArticleCommentsController,
-            ConsumerSaleQuestionsController,
-            ConsumerSaleReviewsController,
-        ],
-    },
-    ENCRYPTION_PASSWORD,
-)
-class TestModule {}
-
 async function feature(
     connection: api.IConnection,
     func: (connection: api.IConnection) => Promise<void>,
@@ -44,7 +24,12 @@ async function feature(
 
 async function main(): Promise<void> {
     // OPEN SERVER
-    const app = await NestFactory.create(TestModule);
+    const app = await NestFactory.create(
+        await EncryptedModule.dynamic(
+            __dirname + "/controllers",
+            ENCRYPTION_PASSWORD,
+        ),
+    );
     await app.listen(36999);
 
     // DO TEST
