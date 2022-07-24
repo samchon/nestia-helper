@@ -38,12 +38,13 @@
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
     "git-last-commit": "^1.0.1",
-    "nestia": "^3.0.6",
+    "nestia": "^3.0.9",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "suppress-warnings": "^1.0.2",
     "ts-node": "^10.9.1",
-    "ttypescript": "^1.5.13"
+    "ttypescript": "^1.5.13",
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "@nestjs/common": "x.x.x",
