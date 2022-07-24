@@ -118,7 +118,6 @@ export namespace EncryptedModule {
                     current.substr(0, current.length - 3)
                 );
                 for (const key in external) {
-                    console.log(key);
                     const instance: object = external[key];
                     if (Reflect.getMetadata("path", instance) !== undefined)
                         controllers.push(instance);
