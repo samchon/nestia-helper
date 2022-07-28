@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -38,7 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
     "git-last-commit": "^1.0.1",
-    "nestia": "^3.0.9",
+    "nestia": "^3.0.10",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "suppress-warnings": "^1.0.2",
