@@ -43,7 +43,7 @@ export class EncryptedRouteInterceptor implements NestInterceptor {
                         const request: express.Request = http.getRequest();
                         return headers_to_object(request.headers);
                     });
-                const body: string = this.stringify(value);
+                const body: string | undefined = this.stringify(value);
                 const password: IEncryptionPassword =
                     typeof param === "function"
                         ? param({ headers: headers.get(), body }, false)
@@ -65,6 +65,7 @@ export class EncryptedRouteInterceptor implements NestInterceptor {
                 );
 
                 if (disabled === true) return body;
+                else if (body === undefined) return body;
                 return AesPkcs5.encrypt(body, password.key, password.iv);
             }),
             catchError((err) => route_error(err)),
