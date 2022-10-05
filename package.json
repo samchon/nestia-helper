@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -49,6 +49,7 @@
   "dependencies": {
     "@nestjs/common": "x.x.x",
     "@nestjs/core": "x.x.x",
+    "@nestjs/platform-express": "x.x.x",
     "detect-ts-node": "^1.0.5",
     "nestia-fetcher": "^2.0.1",
     "raw-body": "x.x.x",
