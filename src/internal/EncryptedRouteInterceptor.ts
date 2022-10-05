@@ -23,6 +23,7 @@ export class EncryptedRouteInterceptor implements NestInterceptor {
         context: ExecutionContext,
         next: CallHandler,
     ): Observable<any> {
+        const http: HttpArgumentsHost = context.switchToHttp();
         return next.handle().pipe(
             map((value) => {
                 const param:
@@ -37,7 +38,6 @@ export class EncryptedRouteInterceptor implements NestInterceptor {
                         `Error on EncryptedRoute.${this.method}(): no encryption password is given.`,
                     );
 
-                const http: HttpArgumentsHost = context.switchToHttp();
                 const headers: Singleton<Record<string, string>> =
                     new Singleton(() => {
                         const request: express.Request = http.getRequest();
@@ -68,7 +68,7 @@ export class EncryptedRouteInterceptor implements NestInterceptor {
                 else if (body === undefined) return body;
                 return AesPkcs5.encrypt(body, password.key, password.iv);
             }),
-            catchError((err) => route_error(err)),
+            catchError((err) => route_error(http.getRequest(), err)),
         );
     }
 }

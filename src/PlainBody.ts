@@ -3,7 +3,7 @@ import {
     ExecutionContext,
     BadRequestException,
 } from "@nestjs/common";
-import express from "express";
+import type express from "express";
 import raw from "raw-body";
 
 /**

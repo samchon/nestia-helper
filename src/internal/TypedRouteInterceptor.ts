@@ -22,7 +22,7 @@ export class TypedRouteInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             map((value) => this.stringify(value)),
-            catchError((err) => route_error(err)),
+            catchError((err) => route_error(http.getRequest(), err)),
         );
     }
 }

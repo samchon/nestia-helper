@@ -1,4 +1,4 @@
-import { Request } from "express";
+import type express from "express";
 import {
     createParamDecorator,
     ExecutionContext,
@@ -38,7 +38,7 @@ export function TypedParam(
         {}: any,
         ctx: ExecutionContext,
     ) {
-        const request: Request = ctx.switchToHttp().getRequest();
+        const request: express.Request = ctx.switchToHttp().getRequest();
         const str: string = request.params[name];
 
         if (nullable === true && str === "null") return null;
