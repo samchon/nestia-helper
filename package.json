@@ -1,6 +1,6 @@
 {
   "name": "nestia-helper",
-  "version": "3.1.0",
+  "version": "3.1.4",
   "description": "Nestia Helper",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/samchon/nestia-helper#readme",
   "devDependencies": {
-    "@types/nested-error-stacks": "^2.1.0",
+    "@types/express": "^4.17.14",
     "@typescript-eslint/eslint-plugin": "^5.26.0",
     "@typescript-eslint/parser": "^5.26.0",
     "git-last-commit": "^1.0.1",
@@ -50,13 +50,11 @@
     "@nestjs/common": "x.x.x",
     "@nestjs/core": "x.x.x",
     "@nestjs/platform-express": "x.x.x",
-    "@types/express": "x.x.x",
     "detect-ts-node": "^1.0.5",
-    "nested-error-stacks": "^2.1.1",
     "nestia-fetcher": "^2.0.1",
     "raw-body": "x.x.x",
     "reflect-metadata": "x.x.x",
     "rxjs": "x.x.x",
-    "typescript-json": "^3.2.1"
+    "typescript-json": "^3.3.6"
   }
 }

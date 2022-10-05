@@ -45,7 +45,7 @@ export namespace ExceptionManager {
         if (index !== -1) tuples.splice(index, 1);
 
         tuples.push([creator, closure]);
-        tuples = tuples.sort(([x], [y]) => (x.prototype instanceof y ? -1 : 1));
+        tuples.sort(([x], [y]) => (x.prototype instanceof y ? -1 : 1));
     }
 
     /**
@@ -60,6 +60,14 @@ export namespace ExceptionManager {
 
         tuples.splice(index, 1);
         return true;
+    }
+
+    export function on(closure: (error: any) => any): void {
+        listeners.add(closure);
+    }
+
+    export function off(closure: (error: any) => any): void {
+        listeners.delete(closure);
     }
 
     /**
@@ -84,7 +92,12 @@ export namespace ExceptionManager {
     /**
      * @internal
      */
-    export let tuples: Array<[Creator<any>, Closure<any>]> = [];
+    export const tuples: Array<[Creator<any>, Closure<any>]> = [];
+
+    /**
+     * @internal
+     */
+    export const listeners: Set<(error: any) => any> = new Set();
 }
 
 ExceptionManager.insert(

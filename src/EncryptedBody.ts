@@ -1,4 +1,4 @@
-import express from "express";
+import type express from "express";
 import raw from "raw-body";
 import { AesPkcs5, IEncryptionPassword } from "nestia-fetcher";
 import {

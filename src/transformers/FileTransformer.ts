@@ -1,5 +1,4 @@
 import ts from "typescript";
-import NestedError from "nested-error-stacks";
 import { IProject } from "typescript-json/lib/transformers/IProject";
 
 import { NodeTransformer } from "./NodeTransformer";
@@ -40,13 +39,8 @@ export namespace FileTransformer {
             const { line, character } = file.getLineAndCharacterOfPosition(
                 node.pos,
             );
-
-            throw new NestedError(
-                `Error on TSON.tranformer(): failed to transform - ${
-                    file.fileName
-                }:${line + 1}:${character + 1}`,
-                exp as Error,
-            );
+            exp.message += ` - ${file.fileName}.${line + 1}:${character + 1}`;
+            throw exp;
         }
     }
 }
