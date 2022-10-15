@@ -114,9 +114,7 @@ export namespace EncryptedModule {
             if (stats.isDirectory() === true)
                 await iterate(controllers, current);
             else if (file.substr(-3) === `.${EXTENSION}`) {
-                const external: any = await import(
-                    current.substr(0, current.length - 3)
-                );
+                const external: any = await import(current);
                 for (const key in external) {
                     const instance: object = external[key];
                     if (Reflect.getMetadata("path", instance) !== undefined)

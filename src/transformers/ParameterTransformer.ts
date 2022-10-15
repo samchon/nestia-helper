@@ -7,15 +7,20 @@ export namespace ParameterTransformer {
         project: IProject,
         param: ts.ParameterDeclaration,
     ): ts.ParameterDeclaration {
-        if (!param.decorators?.length) return param;
+        const decorators: readonly ts.Decorator[] | undefined = ts.getDecorators
+            ? ts.getDecorators(param)
+            : (param as any).decorators;
+        if (!decorators?.length) return param;
 
         const type: ts.Type = project.checker.getTypeAtLocation(param);
         return ts.factory.updateParameterDeclaration(
             param,
-            param.decorators.map((decorator) =>
-                AssertTransformer.transform(project, type, decorator),
+            decorators.map((deco) =>
+                AssertTransformer.transform(project, type, deco),
             ),
-            param.modifiers,
+            ts.getModifiers
+                ? ts.getModifiers(param) || []
+                : (param as any).modifiers,
             param.dotDotDotToken,
             param.name,
             param.questionToken,
