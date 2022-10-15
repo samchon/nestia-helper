@@ -7,7 +7,10 @@ export namespace MethodTransformer {
         project: IProject,
         method: ts.MethodDeclaration,
     ): ts.MethodDeclaration {
-        if (!method.decorators?.length) return method;
+        const decorators: readonly ts.Decorator[] | undefined = ts.getDecorators
+            ? ts.getDecorators(method)
+            : (method as any).decorators;
+        if (!decorators?.length) return method;
 
         const signature: ts.Signature | undefined =
             project.checker.getSignatureFromDeclaration(method);
@@ -20,10 +23,12 @@ export namespace MethodTransformer {
 
         return ts.factory.updateMethodDeclaration(
             method,
-            method.decorators.map((decorator) =>
-                StringifyTransformer.transform(project, escaped, decorator),
+            decorators.map((deco) =>
+                StringifyTransformer.transform(project, escaped, deco),
             ),
-            method.modifiers,
+            ts.getModifiers
+                ? ts.getModifiers(method) || []
+                : (method as any).modifiers,
             method.asteriskToken,
             method.name,
             method.questionToken,
