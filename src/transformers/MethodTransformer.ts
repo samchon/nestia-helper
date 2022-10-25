@@ -21,14 +21,29 @@ export namespace MethodTransformer {
 
         if (escaped === undefined) return method;
 
+        if (ts.getDecorators !== undefined)
+            return ts.factory.updateMethodDeclaration(
+                method,
+                (method.modifiers || []).map((mod) =>
+                    ts.isDecorator(mod)
+                        ? StringifyTransformer.transform(project, escaped, mod)
+                        : mod,
+                ),
+                method.asteriskToken,
+                method.name,
+                method.questionToken,
+                method.typeParameters,
+                method.parameters,
+                method.type,
+                method.body,
+            );
+        // eslint-disable-next-line
         return ts.factory.updateMethodDeclaration(
             method,
             decorators.map((deco) =>
                 StringifyTransformer.transform(project, escaped, deco),
             ),
-            ts.getModifiers
-                ? ts.getModifiers(method) || []
-                : (method as any).modifiers,
+            (method as any).modifiers,
             method.asteriskToken,
             method.name,
             method.questionToken,
