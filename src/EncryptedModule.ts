@@ -113,7 +113,7 @@ export namespace EncryptedModule {
 
             if (stats.isDirectory() === true)
                 await iterate(controllers, current);
-            else if (file.substr(-3) === `.${EXTENSION}`) {
+            else if (file.substring(file.length - 3) === `.${EXTENSION}`) {
                 const external: any = await import(current);
                 for (const key in external) {
                     const instance: object = external[key];
