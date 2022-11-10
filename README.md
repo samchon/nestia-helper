@@ -6,7 +6,7 @@
 
 Helper library of `NestJS` through [typescript-json](https://github.com/samchon/typescript-json).
 
-`nestia-helper` is a helper library of `NestJS`, which boosts up [`JSON.stringify()`](https://github.com/samchon/typescript-json#fastest-json-string-conversion) function about 5x times faster, of the API responses. Also, `nestia-helper` automatically validates request body from client, through the [`TSON.assertType()`](https://github.com/samchon/typescript-json#runtime-type-checkers) function.
+`nestia-helper` is a helper library of `NestJS`, which boosts up [`JSON.stringify()`](https://github.com/samchon/typescript-json#fastest-json-string-conversion) function about 5x times faster, of the API responses. Also, `nestia-helper` automatically validates request body from client, through the [`TSON.assert()`](https://github.com/samchon/typescript-json#runtime-validators) function.
 
 Read the below code and feel how `nestia-helper` and `typescript-json` makes `NestJS` stronger.
 
@@ -21,7 +21,7 @@ export class BbsArticlesController {
     // `TSON.stringify()` for `IBbsArticle` 
     // Boost up JSON conversion speed about 5x times faster 
     //----
-    // `TSON.assertType()` for `IBbsArticle.IStore`
+    // `TSON.assert()` for `IBbsArticle.IStore`
     // If client request body is not following type type, 
     // `BadRequestException` (status code: 400) would be thrown
     //----
