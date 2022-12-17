@@ -1,3 +1,5 @@
+> Renamed to [`@nestia/core`](https://github.com/samchon/nestia#nestiacore)
+
 # Nestia Helper
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/samchon/nestia-helper/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/nestia-helper.svg)](https://www.npmjs.com/package/nestia-helper)
